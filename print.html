@@ -1,0 +1,1589 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Unsafe Code Guidelines Reference</title>
+        
+        <meta name="robots" content="noindex" />
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><a href="glossary.html"><strong aria-hidden="true">2.</strong> Glossary</a></li><li><a href="layout.html"><strong aria-hidden="true">3.</strong> Data layout</a></li><li><ol class="section"><li><a href="layout/structs-and-tuples.html"><strong aria-hidden="true">3.1.</strong> Structs and tuples</a></li><li><a href="layout/scalars.html"><strong aria-hidden="true">3.2.</strong> Scalars</a></li><li><a href="layout/enums.html"><strong aria-hidden="true">3.3.</strong> Enums</a></li><li><a href="layout/unions.html"><strong aria-hidden="true">3.4.</strong> Unions</a></li><li><a href="layout/pointers.html"><strong aria-hidden="true">3.5.</strong> Pointers</a></li><li><a href="layout/function-pointers.html"><strong aria-hidden="true">3.6.</strong> Function pointers</a></li><li><a href="layout/arrays-and-slices.html"><strong aria-hidden="true">3.7.</strong> Arrays and Slices</a></li><li><a href="layout/packed-simd-vectors.html"><strong aria-hidden="true">3.8.</strong> Packed SIMD vectors</a></li></ol></li><li><a href="validity.html"><strong aria-hidden="true">4.</strong> Validity</a></li><li><ol class="section"><li><a href="validity/unions.html"><strong aria-hidden="true">4.1.</strong> Unions</a></li></ol></li><li><a href="optimizations.html"><strong aria-hidden="true">5.</strong> Optimizations</a></li><li><ol class="section"><li><a href="optimizations/return_value_optimization.html"><strong aria-hidden="true">5.1.</strong> Return value optimization</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Unsafe Code Guidelines Reference</h1>
+
+                        <div class="right-buttons">
+                            <a href="print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2><a class="header" href="#rusts-unsafe-code-guidelines-reference" id="rusts-unsafe-code-guidelines-reference">Rust's Unsafe Code Guidelines Reference</a></h2>
+<p>This document is produced by the <a href="https://github.com/rust-lang/unsafe-code-guidelines">UCG WG</a> to provide a &quot;guide&quot; for
+writing unsafe code that &quot;recommends&quot; what kinds of things unsafe code can and
+cannot do, and that documents which guarantees unsafe code may rely on. It is
+largely a work-in-progress right now.</p>
+<p>Unless we state otherwise, the information in the guide is mostly a
+&quot;recommendation&quot; and still subject to change. The main goal for the WG in 2019
+is to RFC parts of the guide into the language specification, and move those
+parts into the <a href="https://doc.rust-lang.org/reference/index.html">Rust Language Reference</a> proper.</p>
+<h2><a class="header" href="#glossary" id="glossary">Glossary</a></h2>
+<h4><a class="header" href="#aliasing" id="aliasing">Aliasing</a></h4>
+<p><em>Aliasing</em> occurs when one pointer or reference points to a &quot;span&quot; of memory
+that overlaps with the span of another pointer or reference. A span of memory is
+similar to how a slice works: there's a base byte address as well as a length in
+bytes.</p>
+<p><strong>Note</strong>: a full aliasing model for Rust, defining when aliasing is allowed
+and when not, has not yet been defined. The purpose of this definition is to
+define when aliasing <em>happens</em>, not when it is <em>allowed</em>. The most developed
+potential aliasing model so far is <a href="https://github.com/rust-lang/unsafe-code-guidelines/blob/master/wip/stacked-borrows.md">Stacked Borrows</a>.</p>
+<p>Consider the following example:</p>
+<pre><pre class="playpen"><code class="language-rust">fn main() {
+    let u: u64 = 7_u64;
+    let r: &amp;u64 = &amp;u;
+    let s: &amp;[u8] = unsafe {
+        core::slice::from_raw_parts(&amp;u as *const u64 as *const u8, 8)
+    };
+    let (head, tail) = s.split_first().unwrap();
+}
+</code></pre></pre>
+<p>In this case, both <code>r</code> and <code>s</code> alias each other, since they both point to all of
+the bytes of <code>u</code>.</p>
+<p>However, <code>head</code> and <code>tail</code> do not alias each other: <code>head</code> points to the first
+byte of <code>u</code> and <code>tail</code> points to the other seven bytes of <code>u</code> after it. Both <code>head</code>
+and <code>tail</code> alias <code>s</code>, any overlap is sufficient to count as an alias.</p>
+<p>The span of a pointer or reference is the size of the value being pointed to or referenced.
+Depending on the type, you can determine the size as follows:</p>
+<ul>
+<li>For a type <code>T</code> that is <a href="https://doc.rust-lang.org/core/marker/trait.Sized.html"><code>Sized</code></a>
+The span length of a pointer or reference to <code>T</code> is found with <code>size_of::&lt;T&gt;()</code>.</li>
+<li>When <code>T</code> is not <code>Sized</code> the story is a little tricker:
+<ul>
+<li>If you have a reference <code>r</code> you can use <code>size_of_val(r)</code> to determine the
+span of the reference.</li>
+<li>If you have a pointer <code>p</code> you must unsafely convert that to a reference before
+you can use <code>size_of_val</code>. There is not currently a safe way to determine the
+span of a pointer to an unsized type.</li>
+</ul>
+</li>
+</ul>
+<p>The <a href="./layout.html">Data layout</a> chapter also has more information on the sizes of different types.</p>
+<p>One interesting side effect of these rules is that references and pointers to
+Zero Sized Types <em>never</em> alias each other, because their span length is always 0
+bytes.</p>
+<p>It is also important to know that LLVM IR has a <code>noalias</code> attribute that works
+somewhat differently from this definition. However, that's considered a low
+level detail of a particular Rust implementation. When programming Rust, the
+Abstract Rust Machine is intended to operate according to the definition here.</p>
+<h4><a class="header" href="#pointer-provenance" id="pointer-provenance">(Pointer) Provenance</a></h4>
+<p>The <em>provenance</em> of a pointer is used to distinguish pointers that point to the same memory address (i.e., pointers that, when cast to <code>usize</code>, will compare equal).
+Provenance is extra state that only exists in the Rust Abstract Machine; it is needed to specify program behavior but not present any more when the program runs on real hardware.
+In other words, pointers that only differ in their provenance can <em>not</em> be distinguished any more in the final binary (but provenance can influence how the compiler translates the program).</p>
+<p>The exact form of provenance in Rust is unclear.
+It is also unclear whether provenance applies to more than just pointers, i.e., one could imagine integers having provenance as well (so that pointer provenance can be preserved when pointers are cast to an integer and back).
+In the following, we give some examples if what provenance <em>could</em> look like.</p>
+<p><strong>Using provenance to track originating allocation.</strong>
+For example, we have to distinguish pointers to the same location if they originated from different allocations.
+Cross-allocation pointer arithmetic <a href="https://doc.rust-lang.org/std/primitive.pointer.html#method.wrapping_offset">does not lead to usable pointers</a>, so the Rust Abstract Machine <em>somehow</em> has to remember the original allocation to which a pointer pointed.
+It could use provenance to achieve this:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+// Let's assume the two allocations here have base addresses 0x100 and 0x200.
+// We write pointer provenance as `@N` where `N` is some kind of ID uniquely
+// identifying the allocation.
+let raw1 = Box::into_raw(Box::new(13u8));
+let raw2 = Box::into_raw(Box::new(42u8));
+let raw2_wrong = raw1.wrapping_add(raw2.wrapping_sub(raw1 as usize) as usize);
+// These pointers now have the following values:
+// raw1 points to address 0x100 and has provenance @1.
+// raw2 points to address 0x200 and has provenance @2.
+// raw2_wrong points to address 0x200 and has provenance @1.
+// In other words, raw2 and raw2_wrong have same *address*...
+assert_eq!(raw2 as usize, raw2_wrong as usize);
+// ...but it would be UB to dereference raw2_wrong, as it has the wrong *provenance*:
+// it points to address 0x200, which is in allocation @2, but the pointer
+// has provenance @1.
+#}</code></pre></pre>
+<p>This kind of provenance also exists in C/C++, but Rust is more permissive by (a) providing a <a href="https://doc.rust-lang.org/std/primitive.pointer.html#method.wrapping_offset">way to do pointer arithmetic across allocation boundaries without causing immediate UB</a> (though, as we have seen, the resulting pointer still cannot be used for locations outside the allocation it originates), and (b) by allowing pointers to always be compared safely, even if their provenance differs.
+For some more information, see <a href="http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2364.pdf">this document proposing a more precise definition of provenance for C</a>.</p>
+<p><strong>Using provenance for Rust's aliasing rules.</strong>
+Another example of pointer provenance is the &quot;tag&quot; from <a href="https://github.com/rust-lang/unsafe-code-guidelines/blob/master/wip/stacked-borrows.md">Stacked Borrows</a>.
+For some more information, see <a href="https://www.ralfj.de/blog/2018/07/24/pointers-and-bytes.html">this blog post</a>.</p>
+<h4><a class="header" href="#interior-mutability" id="interior-mutability">Interior mutability</a></h4>
+<p><em>Interior Mutation</em> means mutating memory where there also exists a live shared reference pointing to the same memory; or mutating memory through a pointer derived from a shared reference.
+&quot;live&quot; here means a value that will be &quot;used again&quot; later.
+&quot;derived from&quot; means that the pointer was obtained by casting a shared reference and potentially adding an offset.
+This is not yet precisely defined, which will be fixed as part of developing a precise aliasing model.</p>
+<p>Finding live shared references propagates recursively through references, but not through raw pointers.
+So, for example, if data immediately pointed to by a <code>&amp;T</code> or <code>&amp; &amp;mut T</code> is mutated, that's interior mutability.
+If data immediately pointed to by a <code>*const T</code> or <code>&amp;*const T</code> is mutated, that's <em>not</em> interior mutability.</p>
+<p><em>Interior mutability</em> refers to the ability to perform interior mutation without causing UB.
+All interior mutation in Rust has to happen inside an <a href="https://doc.rust-lang.org/core/cell/struct.UnsafeCell.html"><code>UnsafeCell</code></a>, so all data structures that have interior mutability must (directly or indirectly) use <code>UnsafeCell</code> for this purpose.</p>
+<h4><a class="header" href="#validity-and-safety-invariant" id="validity-and-safety-invariant">Validity and safety invariant</a></h4>
+<p>The <em>validity invariant</em> is an invariant that all data must uphold any time it is accessed or copied in a typed manner.
+This invariant is known to the compiler and exploited by optimizations such as improved enum layout or eliding in-bounds checks.</p>
+<p>In terms of MIR statements, &quot;accessed or copied&quot; means whenever an assignment statement is executed.
+That statement has a type (LHS and RHS must have the same type), and the data being assigned must be valid at that type.
+Moreover, arguments passed to a function must be valid at the type given in the callee signature, and the return value of a function must be valid at the type given in the caller signature.
+OPEN QUESTION: Are there more cases where data must be valid?</p>
+<p>In terms of code, some data computed by <code>TERM</code> is valid at type <code>T</code> if and only if the following program does not have UB:</p>
+<pre><code class="language-rust ignore">fn main() { unsafe {
+  let t: T = std::mem::transmute(TERM);
+} }
+</code></pre>
+<p>The <em>safety</em> invariant is an invariant that safe code may assume all data to uphold.
+This invariant is used to justify which operations safe code can perform.
+The safety invariant can be temporarily violated by unsafe code, but must always be upheld when interfacing with unknown safe code.
+It is not relevant when arguing whether some <em>program</em> has UB, but it is relevant when arguing whether some code safely encapsulates its unsafety -- IOW, it is relevant when arguing whether some <em>library</em> can be used by safe code to <em>cause</em> UB.</p>
+<p>In terms of code, some data computed by <code>TERM</code> (possibly constructed from some <code>arguments</code> that can be <em>assumed</em> to satisfy the safety invariant) is valid at type <code>T</code> if and only if the following library function can be safely exposed to arbitrary (safe) code as part of the public library interface:</p>
+<pre><code class="language-rust ignore">pub fn make_something(arguments: U) -&gt; T { unsafe {
+  std::mem::transmute(TERM)
+} }
+</code></pre>
+<p>One example of valid-but-unsafe data is a <code>&amp;str</code> or <code>String</code> that's not well-formed UTF-8: the compiler will not run its own optimizations that would cause any trouble here, so unsafe code may temporarily violate the invariant that strings are <code>UTF-8</code>.
+However, functions on <code>&amp;str</code>/<code>String</code> may assume the string to be <code>UTF-8</code>, meaning they may cause UB if the string is <em>not</em> <code>UTF-8</code>.
+This means that unsafe code violating the UTF-8 invariant must not perform string operations (it may operate on the data as a byte slice though), or else it risks UB.
+Moreover, such unsafe code must not return a non-UTF-8 string to the &quot;outside&quot; of its safe abstraction boundary, because that would mean safe code could cause UB by doing <code>bad_function().chars().count()</code>.</p>
+<p>To summarize: <em>Data must always be valid, but it only must be safe in safe code.</em>
+For some more information, see <a href="https://www.ralfj.de/blog/2018/08/22/two-kinds-of-invariants.html">this blog post</a>.</p>
+<h4><a class="header" href="#layout" id="layout">Layout</a></h4>
+<p>The <em>layout</em> of a type defines its size and alignment as well as the offsets of its subobjects (e.g. fields of structs/unions/enum/... or elements of arrays).
+Moreover, the layout of a type records its <em>function call ABI</em> (or just <em>ABI</em> for short): how the type is passed <em>by value</em> across a function boundary.</p>
+<p>Note: Originally, <em>layout</em> and <em>representation</em> were treated as synonyms, and Rust language features like the <code>#[repr]</code> attribute reflect this. 
+In this document, <em>layout</em> and <em>representation</em> are not synonyms.</p>
+<h4><a class="header" href="#niche" id="niche">Niche</a></h4>
+<p>The <em>niche</em> of a type determines invalid bit-patterns that will be used by layout optimizations.</p>
+<p>For example, <code>&amp;mut T</code> has at least one niche, the &quot;all zeros&quot; bit-pattern. This
+niche is used by layout optimizations like <a href="layout/enums.html#discriminant-elision-on-option-like-enums">&quot;<code>enum</code> discriminant
+elision&quot;</a> to
+guarantee that <code>Option&lt;&amp;mut T&gt;</code> has the same size as <code>&amp;mut T</code>.</p>
+<p>While all niches are invalid bit-patterns, not all invalid bit-patterns are
+niches. For example, the &quot;all bits uninitialized&quot; is an invalid bit-pattern for
+<code>&amp;mut T</code>, but this bit-pattern cannot be used by layout optimizations, and is not a
+niche.</p>
+<h4><a class="header" href="#zero-sized-type--zst" id="zero-sized-type--zst">Zero-sized type / ZST</a></h4>
+<p>Types with zero size are called zero-sized types, which is abbreviated as &quot;ZST&quot;.
+This document also uses the &quot;1-ZST&quot; abbreviation, which stands for &quot;one-aligned
+zero-sized type&quot;, to refer to zero-sized types with an alignment requirement of 1. </p>
+<p>For example, <code>()</code> is a &quot;1-ZST&quot; but <code>[u16; 0]</code> is not because it has an alignment
+requirement of 2.</p>
+<h4><a class="header" href="#place" id="place">Place</a></h4>
+<p>A <em>place</em> (called &quot;lvalue&quot; in C and &quot;glvalue&quot; in C++) is the result of computing a <a href="https://doc.rust-lang.org/reference/expressions.html#place-expressions-and-value-expressions"><em>place expression</em></a>.
+A place is basically a pointer (pointing to some location in memory, potentially carrying <a href="glossary.html#pointer-provenance">provenance</a>), but might contain more information such as size or alignment (the details will have to be determined as the Rust Abstract Machine gets specified more precisely).
+A place has a type, indicating the type of <a href="glossary.html#value">values</a> that it stores.</p>
+<p>The key operations on a place are:</p>
+<ul>
+<li>Storing a <a href="glossary.html#value">value</a> of the same type in it (when it is used on the left-hand side of an assignment).</li>
+<li>Loading a <a href="glossary.html#value">value</a> of the same type from it (through the place-to-value coercion).</li>
+<li>Converting between a place (of type <code>T</code>) and a pointer value (of type <code>&amp;T</code>, <code>&amp;mut T</code>, <code>*const T</code> or <code>*mut T</code>) using the <code>&amp;</code> and <code>*</code> operators.
+This is also the only way a place can be &quot;stored&quot;: by converting it to a value first.</li>
+</ul>
+<h4><a class="header" href="#value" id="value">Value</a></h4>
+<p>A <em>value</em> (called &quot;value of the expression&quot; or &quot;rvalue&quot; in C and &quot;prvalue&quot; in C++) is what gets stored in a <a href="glossary.html#place">place</a>, and also the result of computing a <a href="https://doc.rust-lang.org/reference/expressions.html#place-expressions-and-value-expressions"><em>value expression</em></a>.
+A value has a type, and it denotes the abstract mathematical concept that is represented by data in our programs.</p>
+<p>For example, a value of type <code>u8</code> is a mathematical integer in the range <code>0..256</code>.
+Values can be (according to their type) turned into a list of bytes, which is called a <a href="glossary.html#representation">representation</a> of the value.
+Values are ephemeral; they arise during the computation of an instruction but are only ever persisted in memory through their representation.
+(This is comparable to how run-time data in a program is ephemeral and is only ever persisted in serialized form.)</p>
+<h4><a class="header" href="#representation-relation" id="representation-relation">Representation (relation)</a></h4>
+<p>A <em>representation</em> of a <a href="glossary.html#value">value</a> is a list of bytes that is used to store or &quot;represent&quot; that value in memory.</p>
+<p>We also sometimes speak of the <em>representation of a type</em>; this should more correctly be called the <em>representation relation</em> as it relates values of this type to lists of bytes that represent this value.
+The term &quot;relation&quot; here is used in the mathematical sense: the representation relation is a predicate that, given a value and a list of bytes, says whether this value is represented by that list of bytes (<code>val -&gt; list byte -&gt; Prop</code>).</p>
+<p>The relation should be functional for a fixed list of bytes (i.e., every list of bytes has at most one associated representation).
+It is partial in both directions: not all values have a representation (e.g. the mathematical integer <code>300</code> has no representation at type <code>u8</code>), and not all lists of bytes correspond to a value of a specific type (e.g. lists of the wrong size correspond to no value, and the list consisting of the single byte <code>0x10</code> corresponds to no value of type <code>bool</code>).
+For a fixed value, there can be many representations (e.g., when considering type <code>#[repr(C)] Pair(u8, u16)</code>, the second byte is a padding byte so changing it does not affect the value represented by a list of bytes).</p>
+<p>See the <a href="https://github.com/rust-lang/unsafe-code-guidelines/tree/master/wip/value-domain.md">value domain</a> for an example how values and representation relations can be made more precise.</p>
+<h1><a class="header" href="#data-layout" id="data-layout">Data layout</a></h1>
+<h1><a class="header" href="#layout-of-structs-and-tuples" id="layout-of-structs-and-tuples">Layout of structs and tuples</a></h1>
+<p><strong>Disclaimer:</strong> This chapter represents the consensus from issues
+<a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/11">#11</a> and <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/12">#12</a>.  The statements in here are not (yet) &quot;guaranteed&quot;
+not to change until an RFC ratifies them.</p>
+<h2><a class="header" href="#tuple-types" id="tuple-types">Tuple types</a></h2>
+<p>In general, an anonymous tuple type <code>(T1..Tn)</code> of arity N is laid out
+&quot;as if&quot; there were a corresponding tuple struct declared in libcore:</p>
+<pre><code class="language-rust ignore">#[repr(Rust)]
+struct TupleN&lt;P1..Pn:?Sized&gt;(P1..Pn);
+</code></pre>
+<p>In this case, <code>(T1..Tn)</code> would be compatible with <code>TupleN&lt;T1..Tn&gt;</code>.
+As discussed below, this generally means that the compiler is <strong>free
+to re-order field layout</strong> as it wishes. Thus, if you would like a
+guaranteed layout from a tuple, you are generally advised to create a
+named struct with a <code>#[repr(C)]</code> annotation (see <a href="layout/structs-and-tuples.html#structs">the section on
+structs for more details</a>).</p>
+<p>Note that the final element of a tuple (<code>Pn</code>) is marked as <code>?Sized</code> to
+permit unsized tuple coercion -- this is implemented on nightly but is
+currently unstable (<a href="https://github.com/rust-lang/rust/issues/42877">tracking issue</a>). In the future, we may
+extend unsizing to other elements of tuples as well.</p>
+<h3><a class="header" href="#other-notes-on-tuples" id="other-notes-on-tuples">Other notes on tuples</a></h3>
+<p>Some related discussion:</p>
+<ul>
+<li><a href="https://github.com/rust-lang/rfcs/pull/1582">RFC #1582</a> proposed
+that tuple structs should have a &quot;nested layout&quot;, where
+e.g. <code>(T1, T2, T3)</code> would in fact be laid out as <code>(T1, (T2, T3))</code>. The purpose of this was to permit variadic matching and so
+forth against some suffix of the struct. This RFC was not accepted,
+however. This layout requires extra padding and seems somewhat
+surprising: it means that the layout of tuples and tuple structs
+would diverge significantly from structs with named fields.</li>
+</ul>
+<p><a name="structs"></a></p>
+<h2><a class="header" href="#struct-types" id="struct-types">Struct types</a></h2>
+<p>Structs come in two principle varieties:</p>
+<pre><code class="language-rust ignore">// Structs with named fields
+struct Foo { f1: T1, .., fn: Tn }
+
+// Tuple structs
+struct Foo(T1, .., Tn);
+</code></pre>
+<p>In terms of their layout, tuple structs can be understood as
+equivalent to a named struct with fields named <code>0..n-1</code>:</p>
+<pre><code class="language-rust ignore">struct Foo {
+  0: T1,
+  ...
+  n-1: Tn
+}
+</code></pre>
+<p>(In fact, one may use such field names in patterns or in accessor
+expressions like <code>foo.0</code>.)</p>
+<p>Structs can have various <code>#[repr]</code> flags that influence their layout:</p>
+<ul>
+<li><code>#[repr(Rust)]</code> -- the default.</li>
+<li><code>#[repr(C)]</code> -- request C compatibility</li>
+<li><code>#[repr(align(N))]</code> -- specify the alignment</li>
+<li><code>#[repr(packed)]</code> -- request packed layout where fields are not internally aligned</li>
+<li><code>#[repr(transparent)]</code> -- request that a &quot;wrapper struct&quot; be treated
+&quot;as if&quot; it were an instance of its field type when passed as an
+argument</li>
+</ul>
+<h3><a class="header" href="#default-layout-repr-rust" id="default-layout-repr-rust">Default layout (&quot;repr rust&quot;)</a></h3>
+<p><strong>The default layout of structs is not specified.</strong> As of this
+writing, we have not reached a full consensus on what limitations
+should exist on possible field struct layouts, so effectively one must
+assume that the compiler can select any layout it likes for each
+struct on each compilation, and it is not required to select the same
+layout across two compilations. This implies that (among other things)
+two structs with the same field types may not be laid out in the same
+way (for example, the hypothetical struct representing tuples may be
+laid out differently from user-declared structs).</p>
+<p>Known things that can influence layout (non-exhaustive):</p>
+<ul>
+<li>the type of the struct fields and the layout of those types</li>
+<li>compiler settings, including esoteric choices like optimization fuel</li>
+</ul>
+<p><strong>A note on determinism.</strong> The definition above does not guarantee
+determinism between executions of the compiler -- two executions may
+select different layouts, even if all inputs are identical. Naturally,
+in practice, the compiler aims to produce deterministic output for a
+given set of inputs. However, it is difficult to produce a
+comprehensive summary of the various factors that may affect the
+layout of structs, and so for the time being we have opted for a
+conservative definition.</p>
+<p><strong>Compiler's current behavior.</strong> As of the time of this writing, the
+compiler will reorder struct fields to minimize the overall size of
+the struct (and in particular to eliminate padding due to alignment
+restrictions).</p>
+<p>Layout is presently defined not in terms of a &quot;fully monomorphized&quot;
+struct definition but rather in terms of its generic definition along
+with a set of substitutions (values for each type parameter; lifetime
+parameters do not affect layout). This distinction is important
+because of <em>unsizing</em> -- if the final field has generic type, the
+compiler will not reorder it, to allow for the possibility of
+unsizing. E.g., <code>struct Foo { x: u16, y: u32 }</code> and <code>struct Foo&lt;T&gt; { x: u16, y: T }</code> where <code>T = u32</code> are not guaranteed to be identical.</p>
+<h4><a class="header" href="#zero-sized-structs" id="zero-sized-structs">Zero-sized structs</a></h4>
+<p>For <code>repr(Rust)</code>, <code>repr(packed(N))</code>, <code>repr(align(N))</code>, and <code>repr(C)</code>
+structs: if all fields of a struct have size 0, then the struct has size 0.</p>
+<p>For example, all these types are zero-sized:</p>
+<pre><pre class="playpen"><code class="language-rust"># use std::mem::size_of;
+#[repr(align(32))] struct Zst0;
+#[repr(C)] struct Zst1(Zst0);
+struct Zst2(Zst1, Zst0);
+# fn main() {
+# assert_eq!(size_of::&lt;Zst0&gt;(), 0);
+# assert_eq!(size_of::&lt;Zst1&gt;(), 0);
+# assert_eq!(size_of::&lt;Zst2&gt;(), 0);
+# }
+</code></pre></pre>
+<h4><a class="header" href="#unresolved-questions" id="unresolved-questions">Unresolved questions</a></h4>
+<p>During the course of the discussion in <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/11">#11</a> and <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/12">#12</a>, various
+suggestions arose to limit the compiler's flexibility. These questions
+are currently considering <strong>unresolved</strong> and -- for each of them -- an
+issue has been opened for further discussion on the repository. This
+section documents the questions and gives a few light details, but the
+reader is referred to the issues for further discussion.</p>
+<p><strong>Single-field structs (<a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/34">#34</a>).</strong> If you have a struct with single field
+(<code>struct Foo { x: T }</code>), should we guarantee that the memory layout of
+<code>Foo</code> is identical to the memory layout of <code>T</code> (note that ABI details
+around function calls may still draw a distinction, which is why
+<code>#[repr(transparent)]</code> is needed). What about zero-sized types like
+<code>PhantomData</code>?</p>
+<p><strong>Homogeneous structs (<a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/36">#36</a>).</strong> If you have homogeneous structs, where all
+the <code>N</code> fields are of a single type <code>T</code>, can we guarantee a mapping to
+the memory layout of <code>[T; N]</code>? How do we map between the field names
+and the indices? What about zero-sized types?</p>
+<p><strong>Deterministic layout (<a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/35">#35</a>).</strong> Can we say that layout is some deterministic
+function of a certain, fixed set of inputs? This would allow you to be
+sure that if you do not alter those inputs, your struct layout would
+not change, even if it meant that you can't predict precisely what it
+will be. For example, we might say that struct layout is a function of
+the struct's generic types and its substitutions, full stop -- this
+would imply that any two structs with the same definition are laid out
+the same. This might interfere with our ability to do profile-guided
+layout or to analyze how a struct is used and optimize based on
+that. Some would call that a feature.</p>
+<h3><a class="header" href="#c-compatible-layout-repr-c" id="c-compatible-layout-repr-c">C-compatible layout (&quot;repr C&quot;)</a></h3>
+<p>For structs tagged <code>#[repr(C)]</code>, the compiler will apply a C-like
+layout scheme. See section 6.7.2.1 of the <a href="http://www.open-std.org/jtc1/sc22/wg14/www/abq/c17_updated_proposed_fdis.pdf">C17 specification</a> for
+a detailed write-up of what such rules entail (as well as the relevant
+specs for your platform). For most platforms, however, this means the
+following:</p>
+<ul>
+<li>
+<p>Field order is preserved.</p>
+</li>
+<li>
+<p>The first field begins at offset 0.</p>
+</li>
+<li>
+<p>Assuming the struct is not packed, each field's offset is aligned<sup class="footnote-reference"><a href="#aligned">1</a></sup> to
+the ABI-mandated alignment for that field's type, possibly creating
+unused padding bits.</p>
+</li>
+<li>
+<p>The total size of the struct is rounded up to its overall alignment.</p>
+</li>
+<div class="footnote-definition" id="aligned"><sup class="footnote-definition-label">1</sup>
+<p>Aligning an offset O to an alignment A means to round up the offset O until it is a multiple of the alignment A.</p>
+</div>
+</ul>
+<p>The intention is that if one has a set of C struct declarations and a
+corresponding set of Rust struct declarations, all of which are tagged
+with <code>#[repr(C)]</code>, then the layout of those structs will all be
+identical. Note that this setup implies that none of the structs in
+question can contain any <code>#[repr(Rust)]</code> structs (or Rust tuples), as
+those would have no corresponding C struct declaration -- as
+<code>#[repr(Rust)]</code> types have undefined layout, you cannot safely declare
+their layout in a C program.</p>
+<p>See also the notes on <a href="layout/structs-and-tuples.html#fnabi">ABI compatibility</a> under the section on <code>#[repr(transparent)]</code>.</p>
+<p><strong>Structs with no fields.</strong> One area where Rust layout can deviate
+from C/C++ -- even with <code>#[repr(C)]</code> -- comes about with &quot;empty
+structs&quot; that have no fields. In C, an empty struct declaration like
+<code>struct Foo { }</code> is illegal. However, both gcc and clang support
+options to enable such structs, and <a href="https://godbolt.org/z/AS2gdC">assign them size
+zero</a>. Rust behaves the same way --
+empty structs have size 0 and alignment 1 (unless an explicit
+<code>#[repr(align)]</code> is present). C++, in contrast, gives empty structs a
+size of 1, unless they are inherited from or they are fields that have
+the <code>[[no_unique_address]]</code> attribute, in which case they do not
+increase the overall size of the struct.</p>
+<p><strong>Structs of zero-size.</strong> It is also possible to have structs that
+have fields but still have zero size. In this case, the size of the
+struct would be zero, but its alignment may be greater. For example,
+<code>#[repr(C)] struct Foo { x: [u16; 0] }</code> would have an alignment of 2
+bytes by default. (<a href="https://godbolt.org/z/5w0gkq">This matches the behavior in gcc and
+clang</a>.)</p>
+<p><strong>Structs with fields of zero-size.</strong> If a <code>#[repr(C)]</code> struct
+containing a field of zero-size, that field does not occupy space in
+the struct; it can affect the offsets of subsequent fields if it
+induces padding due to the alignment on its type. (<a href="https://godbolt.org/z/5w0gkq">This matches the
+behavior in gcc and clang</a>.)</p>
+<p><strong>C++ compatibility hazard.</strong> As noted above when discussing structs
+with no fields, C++ treats empty structs like <code>struct Foo { }</code>
+differently from C and Rust. This can introduce subtle compatibility
+hazards. If you have an empty struct in your C++ code and you make the
+&quot;naive&quot; translation into Rust, even tagging with <code>#[repr(C)]</code> will not
+produce layout- or ABI-compatible results.</p>
+<h3><a class="header" href="#fixed-alignment" id="fixed-alignment">Fixed alignment</a></h3>
+<p>The <code>#[repr(align(N))]</code> attribute may be used to raise the alignment
+of a struct, as described in <a href="https://doc.rust-lang.org/stable/reference/type-layout.html#the-align-representation">The Rust Reference</a>.</p>
+<h3><a class="header" href="#packed-layout" id="packed-layout">Packed layout</a></h3>
+<p>The <code>#[repr(packed(N))]</code> attribute may be used to impose a maximum
+limit on the alignments for individual fields. It is most commonly
+used with an alignment of 1, which makes the struct as small as
+possible. For example, in a <code>#[repr(packed(2))]</code> struct, a <code>u8</code> or
+<code>u16</code> would be aligned at 1- or 2-bytes respectively (as normal), but
+a <code>u32</code> would be aligned at only 2 bytes instead of 4. In the absence
+of an explicit <code>#[repr(align)]</code> directive, <code>#[repr(packed(N))]</code> also
+sets the alignment for the struct as a whole to N bytes.</p>
+<p>The resulting fields may not fall at properly aligned boundaries in
+memory. This makes it unsafe to create a Rust reference (<code>&amp;T</code> or <code>&amp;mut T</code>) to those fields, as the compiler requires that all reference
+values must always be aligned (so that it can use more efficient
+load/store instructions at runtime). See the <a href="https://doc.rust-lang.org/stable/reference/type-layout.html#the-packed-representation">Rust reference for more
+details</a>.</p>
+<p><a name="fnabi"> </a></p>
+<h3><a class="header" href="#function-call-abi-compatibility" id="function-call-abi-compatibility">Function call ABI compatibility</a></h3>
+<p>In general, when invoking functions that use the C ABI, <code>#[repr(C)]</code>
+structs are guaranteed to be passed in the same way as their
+corresponding C counterpart (presuming one exists). <code>#[repr(Rust)]</code>
+structs have no such guarantee. This means that if you have an <code>extern &quot;C&quot;</code> function, you cannot pass a <code>#[repr(Rust)]</code> struct as one of its
+arguments. Instead, one would typically pass <code>#[repr(C)]</code> structs (or
+possibly pointers to Rust-structs, if those structs are opaque on the
+other side, or the callee is defined in Rust).</p>
+<p>However, there is a subtle point about C ABIs: in some C ABIs, passing
+a struct with one field of type <code>T</code> as an argument is <strong>not</strong>
+equivalent to just passing a value of type <code>T</code>. So e.g. if you have a
+C function that is defined to take a <code>uint32_t</code>:</p>
+<pre><code class="language-C">void some_function(uint32_t value) { .. }
+</code></pre>
+<p>It is <strong>incorrect</strong> to pass in a struct as that value, even if that
+struct is <code>#[repr(C)</code>] and has only one field:</p>
+<pre><code class="language-rust ignore">#[repr(C)]
+struct Foo { x: u32 }
+
+extern &quot;C&quot; some_function(Foo);
+
+some_function(Foo { x: 22 }); // Bad!
+</code></pre>
+<p>Instead, you should declare the struct with <code>#[repr(transparent)]</code>,
+which specifies that <code>Foo</code> should use the ABI rules for its field
+type, <code>u32</code>. This is useful when using &quot;wrapper structs&quot; in Rust to
+give stronger typing guarantees.</p>
+<p><code>#[repr(transparent)]</code> can only be applied to structs with a single
+field whose type <code>T</code> has non-zero size, along with some number of
+other fields whose types are all zero-sized (typically
+<code>std::marker::PhantomData</code> fields). The struct then takes on the &quot;ABI
+behavior&quot; of the type <code>T</code> that has non-zero size.</p>
+<p>(Note further that the Rust ABI is undefined and theoretically may
+vary from compiler revision to compiler revision.)</p>
+<h2><a class="header" href="#unresolved-question-guaranteeing-compatible-layouts" id="unresolved-question-guaranteeing-compatible-layouts">Unresolved question: Guaranteeing compatible layouts?</a></h2>
+<p>One key unresolved question was whether we would want to guarantee
+that two <code>#[repr(Rust)]</code> structs whose fields have the same types are
+laid out in a &quot;compatible&quot; way, such that one could be transmuted to
+the other. @rkruppe laid out a <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/11#issuecomment-419956939">number of
+examples</a>
+where this might be a reasonable thing to expect. As currently
+written, and in an effort to be conservative, we make no such
+guarantee, though we do not firmly rule out doing such a thing in the future.</p>
+<p>It seems like it may well be desirable to -- at minimum -- guarantee
+that <code>#[repr(Rust)]</code> layout is &quot;some deterministic function of the
+struct declaration and the monomorphized types of its fields&quot;.  Note
+that it is not sufficient to consider the monomorphized type of a
+struct's fields: due to unsizing coercions, it matters whether the
+struct is declared in a generic way or not, since the &quot;unsized&quot; field
+must presently be <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/12#issuecomment-417843595">laid out last in the
+structure</a>. (Note
+that tuples are always coercible (see <a href="https://github.com/rust-lang/rust/issues/42877">#42877</a> for more information),
+and are always declared as generics.) This implies that our
+&quot;deterministic function&quot; also takes as input the form in which the
+fields are declared in the struct.</p>
+<p>However, that rule is not true today. For example, the compiler
+includes an option (called &quot;optimization fuel&quot;) that will enable us to
+alter the layout of only the &quot;first N&quot; structs declared in the
+source. When one is accidentally relying on the layout of a structure,
+this can be used to track down the struct that is causing the problem.</p>
+<p>There are also benefits to having fewer guarantees. For example:</p>
+<ul>
+<li>Code hardening tools can be used to randomize the layout of individual structs.</li>
+<li>Profile-guided optimization might analyze how instances of a
+particular struct are used and tweak the layout (e.g., to insert
+padding and reduce false sharing).
+<ul>
+<li>However, there aren't many tools that do this sort of thing
+(<a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/11#issuecomment-420650851">1</a>,
+<a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/11#issuecomment-420681763">2</a>). Moreover,
+it would probably be better for the tools to merely recommend
+annotations that could be added
+(<a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/11#issuecomment-420077105">1</a>,
+<a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/11#issuecomment-420077105">2</a>),
+such that the knowledge of the improved layouts can be recorded in the
+source.</li>
+</ul>
+</li>
+</ul>
+<p>As a more declarative alternative, @alercah <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/12#issuecomment-420165155">proposed a possible
+extension</a>
+that would permit one to declare that the layout of two structs or
+types are compatible (e.g., <code>#[repr(as(Foo))] struct Bar { .. }</code>),
+thus permitting safe transmutes (and also ABI compatibility).  One
+might also use some weaker form of <code>#[repr(C)]</code> to specify a &quot;more
+deterministic&quot; layout. These areas need future exploration.</p>
+<h2><a class="header" href="#counteropinions-and-other-notes" id="counteropinions-and-other-notes">Counteropinions and other notes</a></h2>
+<p>@joshtripplet <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/11#issuecomment-417953576">argued against reordering struct
+fields</a>,
+suggesting instead it would be better if users reordering fields
+themselves. However, there are a number of downsides to such a
+proposal (and -- further -- it does not match our existing behavior):</p>
+<ul>
+<li>In a generic struct, the <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/11#issuecomment-420659840">best ordering of fields may not be known
+ahead of
+time</a>,
+so the user cannot do it manually.</li>
+<li>If layout is defined, and a library exposes a struct with all public
+fields, then clients may be more likely to assume that the layout of
+that struct is stable. If they were to write unsafe code that relied
+on this assumption, that would break if fields were reordered. But
+libraries may well expect the freedom to reorder fields. This case
+is weakened because of the requirement to write unsafe code (after
+all, one can always write unsafe code that relies on virtually any
+implementation detail); if we were to permit <strong>safe</strong> casts that
+rely on the layout, then reordering fields would clearly be a
+breaking change (see also <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/11#issuecomment-420117856">this
+comment</a>
+and <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/pull/31#discussion_r224955817">this
+thread</a>).</li>
+<li>Many people would prefer the name ordering to be chosen for
+&quot;readability&quot; and not optimal layout.</li>
+</ul>
+<h1><a class="header" href="#layout-of-scalar-types" id="layout-of-scalar-types">Layout of scalar types</a></h1>
+<p>This chapter represents the consensus from issue <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/9">#9</a>. It documents the memory
+layout and considerations for <code>bool</code>, <code>char</code>, floating point types (<code>f{32, 64}</code>), and integral types (<code>{i,u}{8,16,32,64,128,size}</code>).</p>
+<p>These types are all scalar types, representing a single value, and have no
+layout <code>#[repr()]</code> flags.</p>
+<h2><a class="header" href="#bool" id="bool"><code>bool</code></a></h2>
+<p>Rust's <code>bool</code> has the same layout as C17's<code> _Bool</code>, that is, its size and
+alignment are implementation-defined. Any <code>bool</code> can be cast into an integer,
+taking on the values 1 (<code>true</code>) or 0 (<code>false</code>).</p>
+<blockquote>
+<p><strong>Note</strong>: on all platforms that Rust's currently supports, its size and
+alignment are 1, and its ABI class is <code>INTEGER</code> - see <a href="https://gankro.github.io/blah/rust-layouts-and-abis/#the-layoutsabis-of-builtins">Rust Layout and ABIs</a>.</p>
+</blockquote>
+<h2><a class="header" href="#char" id="char"><code>char</code></a></h2>
+<p>Rust char is 32-bit wide and represents an <a href="http://www.unicode.org/glossary/#unicode_scalar_value">unicode scalar value</a>. The alignment
+of <code>char</code> is <em>implementation-defined</em>.</p>
+<blockquote>
+<p><strong>Note</strong>: Rust <code>char</code> type is not layout compatible with C / C++ <code>char</code> types.
+The C / C++ <code>char</code> types correspond to either Rust's <code>i8</code> or <code>u8</code> types on all
+currently supported platforms, depending on their signedness. Rust does not
+support C platforms in which C <code>char</code> is not 8-bit wide.</p>
+</blockquote>
+<h2><a class="header" href="#isize-and-usize" id="isize-and-usize"><code>isize</code> and <code>usize</code></a></h2>
+<p>The <code>isize</code> and <code>usize</code> types are pointer-sized signed and unsigned integers.
+They have the same layout as the <a href="layout/./pointers.html">pointer types</a> for which the pointee is
+<code>Sized</code>, and are layout compatible with C's <code>uintptr_t</code> and <code>intptr_t</code> types.</p>
+<blockquote>
+<p><strong>Note</strong>: C99 <a href="https://port70.net/%7Ensz/c/c99/n1256.html#7.18.2.4">7.18.2.4</a>
+requires <code>uintptr_t</code> and <code>intptr_t</code> to be at least 16-bit wide. All 
+platforms we currently support have a C platform, and as a consequence,
+<code>isize</code>/<code>usize</code> are at least 16-bit wide for all of them.</p>
+</blockquote>
+<blockquote>
+<p><strong>Note</strong>: Rust's <code>usize</code> and C's <code>unsigned</code> types are <strong>not</strong> equivalent. C's
+<code>unsigned</code> is at least as large as a short, allowed to have padding bits, etc.
+but it is not necessarily pointer-sized.</p>
+</blockquote>
+<blockquote>
+<p><strong>Note</strong>: in the current Rust implementation, the layouts of <code>isize</code> and
+<code>usize</code> determine the following:</p>
+<ul>
+<li>
+<p>the maximum size of Rust <em>allocations</em> is limited to <code>isize::max_value()</code>.
+The LLVM <code>getelementptr</code> instruction uses signed-integer field offsets. Rust
+calls <code>getelementptr</code> with the <code>inbounds</code> flag which assumes that field
+offsets do not overflow,</p>
+</li>
+<li>
+<p>the maximum number of elements in an array is <code>usize::max_value()</code> (<code>[T; N: usize]</code>. Only ZST arrays can probably be this large in practice, non-ZST
+arrays are bound by the maximum size of Rust values,</p>
+</li>
+<li>
+<p>the maximum value in bytes by which a pointer can be offseted using
+<code>ptr.add</code> or <code>ptr.offset</code> is <code>isize::max_value()</code>.</p>
+</li>
+</ul>
+<p>These limits have not gone through the RFC process and are not guaranteed to
+hold.</p>
+</blockquote>
+<h2><a class="header" href="#fixed-width-integer-types" id="fixed-width-integer-types">Fixed-width integer types</a></h2>
+<p>For all Rust's fixed-width integer types <code>{i,u}{8,16,32,64,128}</code> it holds that:</p>
+<ul>
+<li>these types have no padding bits,</li>
+<li>their size exactly matches their bit-width,</li>
+<li>negative values of signed integer types are represented using 2's complement.</li>
+</ul>
+<p>Furthermore, Rust's signed and unsigned fixed-width integer types
+<code>{i,u}{8,16,32,64}</code> have the same layout the C fixed-width integer types from
+the <code>&lt;stdint.h&gt;</code> header <code>{u,}int{8,16,32,64}_t</code>. These fixed-width integer types
+are therefore safe to use directly in C FFI where the corresponding C
+fixed-width integer types are expected.</p>
+<p>The alignment of Rust's <code>{i,u}128</code> is <em>unspecified</em> and allowed to change.</p>
+<blockquote>
+<p><strong>Note</strong>: While the C standard does not define fixed-width 128-bit wide
+integer types, many C compilers provide non-standard <code>__int128</code> types as a
+language extension. The layout of <code>{i,u}128</code> in the current Rust
+implementation does <strong>not</strong> match that of these C types, see 
+<a href="https://github.com/rust-lang/rust/issues/54341">rust-lang/#54341</a>.</p>
+</blockquote>
+<h3><a class="header" href="#layout-compatibility-with-c-native-integer-types" id="layout-compatibility-with-c-native-integer-types">Layout compatibility with C native integer types</a></h3>
+<p>The specification of native C integer types, <code>char</code>, <code>short</code>, <code>int</code>, <code>long</code>,
+... as well as their <code>unsigned</code> variants, guarantees a lower bound on their  size,
+e.g., <code>short</code> is <em>at least</em> 16-bit wide and <em>at least</em> as wide as <code>char</code>.</p>
+<p>Their exact sizes are <em>implementation-defined</em>. </p>
+<p>Libraries like <code>libc</code> use knowledge of this <em>implementation-defined</em> behavior on
+each platform to select a layout-compatible Rust fixed-width integer type when
+interfacing with native C integer types (e.g. <code>libc::c_int</code>).</p>
+<blockquote>
+<p><strong>Note</strong>: Rust does not support C platforms on which the C native integer type
+are not compatible with any of Rust's fixed-width integer type (e.g. because
+of padding-bits, lack of 2's complement, etc.).</p>
+</blockquote>
+<h2><a class="header" href="#fixed-width-floating-point-types" id="fixed-width-floating-point-types">Fixed-width floating point types</a></h2>
+<p>Rust's <code>f32</code> and <code>f64</code> single (32-bit) and double (64-bit) precision
+floating-point types have <a href="https://en.wikipedia.org/wiki/IEEE_754">IEEE-754</a> <code>binary32</code> and <code>binary64</code> floating-point
+layouts, respectively.</p>
+<p>When the platforms' <code>&quot;math.h&quot;</code> header defines the <code>__STDC_IEC_559__</code> macro,
+Rust's floating-point types are safe to use directly in C FFI where the
+appropriate C types are expected (<code>f32</code> for <code>float</code>, <code>f64</code> for <code>double</code>).</p>
+<p>If the C platform's <code>&quot;math.h&quot;</code> header does not define the <code>__STDC_IEC_559__</code>
+macro, whether using <code>f32</code> and <code>f64</code> in C FFI is safe or not for which C type is
+<em>implementation-defined</em>.</p>
+<blockquote>
+<p><strong>Note</strong>: the <code>libc</code> crate uses knowledge of each platform's
+<em>implementation-defined</em> behavior to provide portable <code>libc::c_float</code> and
+<code>libc::c_double</code> types that can be used to safely interface with C via FFI.</p>
+</blockquote>
+<h1><a class="header" href="#layout-of-rust-enum-types" id="layout-of-rust-enum-types">Layout of Rust <code>enum</code> types</a></h1>
+<p><strong>Disclaimer:</strong> Some parts of this section were decided in RFCs, but
+others represent the consensus from issue <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/10">#10</a>. The text will attempt
+to clarify which parts are &quot;guaranteed&quot; (owing to the RFC decision)
+and which parts are still in a &quot;preliminary&quot; state, at least until we
+start to open RFCs ratifying parts of the Unsafe Code Guidelines
+effort.</p>
+<h2><a class="header" href="#categories-of-enums" id="categories-of-enums">Categories of enums</a></h2>
+<p><strong>Empty enums.</strong> Enums with no variants can never be instantiated and
+are equivalent to the <code>!</code> type. They do not accept any <code>#[repr]</code>
+annotations.</p>
+<p><strong>Fieldless enums.</strong> The simplest form of enum is one where none of
+the variants have any fields:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+enum SomeEnum {
+  Variant1,
+  Variant2,
+  Variant3,
+}
+#}</code></pre></pre>
+<p>Such enums correspond quite closely with enums in the C language
+(though there are important differences as well). Presuming that they
+have more than one variant, these sorts of enums are always
+represented as a simple integer, though the size will vary.</p>
+<p>Fieldless enums may also specify the value of their discriminants
+explicitly:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+enum SomeEnum {
+  Variant22 = 22,
+  Variant44 = 44,
+  Variant45,
+}
+#}</code></pre></pre>
+<p>As in C, discriminant values that are not specified are defined as
+either 0 (for the first variant) or as one more than the prior
+variant.</p>
+<p><strong>Data-carrying enums.</strong> Enums whose variants have fields are called
+&quot;data-carrying&quot; enums. Note that for the purposes of this definition,
+it is not relevant whether those fields are zero-sized. Therefore this
+enum is considered &quot;data-carrying&quot;:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+enum Foo {
+  Bar(()),
+  Baz,
+}
+#}</code></pre></pre>
+<h2><a class="header" href="#repr-annotations-accepted-on-enums" id="repr-annotations-accepted-on-enums">repr annotations accepted on enums</a></h2>
+<p>In general, enums may be annotated using the following <code>#[repr]</code> tags:</p>
+<ul>
+<li>A specific integer type (called <code>Int</code> as a shorthand below):
+<ul>
+<li><code>#[repr(u8)]</code></li>
+<li><code>#[repr(u16)]</code></li>
+<li><code>#[repr(u32)]</code></li>
+<li><code>#[repr(u64)]</code></li>
+<li><code>#[repr(i8)]</code></li>
+<li><code>#[repr(i16)]</code></li>
+<li><code>#[repr(i32)]</code></li>
+<li><code>#[repr(i64)]</code></li>
+</ul>
+</li>
+<li>C-compatible layout:
+<ul>
+<li><code>#[repr(C)]</code></li>
+</ul>
+</li>
+<li>C-compatible layout with a specified discriminant size:
+<ul>
+<li><code>#[repr(C, u8)]</code></li>
+<li><code>#[repr(C, u16)]</code></li>
+<li>etc</li>
+</ul>
+</li>
+</ul>
+<p>Note that manually specifying the alignment using <code>#[repr(align)]</code> is
+not permitted on an enum.</p>
+<p>The set of repr annotations accepted by an enum depends on its category,
+as defined above:</p>
+<ul>
+<li>Empty enums: no repr annotations are permitted.</li>
+<li>Fieldless enums: <code>#[repr(Int)]</code>-style and <code>#[repr(C)]</code> annotations are permitted, but <code>#[repr(C, Int)]</code> annotations are not.</li>
+<li>Data-carrying enums: all repr annotations are permitted.</li>
+</ul>
+<h2><a class="header" href="#enum-layout-rules" id="enum-layout-rules">Enum layout rules</a></h2>
+<p>The rules for enum layout vary depending on the category.</p>
+<h3><a class="header" href="#layout-of-an-empty-enum" id="layout-of-an-empty-enum">Layout of an empty enum</a></h3>
+<p>An <strong>empty enum</strong> is an enum with no variants; empty enums can never
+be instantiated and are logically equivalent to the &quot;never type&quot;
+<code>!</code>. <code>#[repr]</code> annotations are not accepted on empty enums. Empty
+enums are guaranteed to have the same layout as <code>!</code> (zero size and
+alignment 1).</p>
+<h3><a class="header" href="#layout-of-a-fieldless-enum" id="layout-of-a-fieldless-enum">Layout of a fieldless enum</a></h3>
+<p>If there is no <code>#[repr]</code> attached to a fieldless enum, the compiler
+will represent it using an integer of sufficient size to store the
+discriminants for all possible variants -- note that if there is only
+one variant, then 0 bits are required, so it is possible that the enum
+may have zero size. In the absence of a <code>#[repr]</code> annotation, the
+number of bits used by the compiler are not defined and are subject to
+change.</p>
+<p>When a <code>#[repr(Int)]</code>-style annotation is attached to a fieldless enum
+(one without any data for its variants), it will cause the enum to be
+represented as a simple integer of the specified size <code>Int</code>. This must
+be sufficient to store all the required discriminant values.</p>
+<p>The <code>#[repr(C)]</code> annotation is equivalent, but it selects the same
+size as the C compiler would use for the given target for an
+equivalent C-enum declaration.</p>
+<p>Combining a <code>C</code> and <code>Int</code> <code>repr</code> (e.g., <code>#[repr(C, u8)]</code>) is
+not permitted on a fieldless enum.</p>
+<p>The values used for the discriminant will match up with what is
+specified (or automatically assigned) in the enum definition. For
+example, the following enum defines the discriminants for its variants
+as 22 and 23 respectively:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+enum Foo { 
+  // Specificy discriminant of this variant as 22:
+  Variant22 = 22,
+  
+  // Default discriminant is one more than the previous,
+  // so 23 will be assigned.
+  Variant23
+}
+#}</code></pre></pre>
+<p><strong>Note:</strong> some C compilers offer flags (e.g., <code>-fshort-enums</code>) that
+change the layout of enums from the default settings that are standard
+for the platform. The integer size selected by <code>#[repr(C)]</code> is defined
+to match the <strong>default</strong> settings for a given target, when no such
+flags are supplied. If interop with code that uses other flags is
+desired, then one should either specify the sizes of enums manually or
+else use an alternate target definition that is tailored to the
+compiler flags in use.</p>
+<h3><a class="header" href="#layout-of-a-data-carrying-enums-with-an-explicit-repr-annotation" id="layout-of-a-data-carrying-enums-with-an-explicit-repr-annotation">Layout of a data-carrying enums with an explicit repr annotation</a></h3>
+<p>This section concerns data-carrying enums <strong>with an explicit repr
+annotation of some form</strong>. The memory layout of such cases was
+specified in <a href="https://rust-lang.github.io/rfcs/2195-really-tagged-unions.html">RFC 2195</a> and is therefore normative.</p>
+<p>The layout of data-carrying enums that do <strong>not</strong> have an explicit
+repr annotation is generally undefined, but with certain specific
+exceptions: see the next section for details.</p>
+<h4><a class="header" href="#explicit-repr-annotation-without-c-compatibility" id="explicit-repr-annotation-without-c-compatibility">Explicit repr annotation without C compatibility</a></h4>
+<p>When an enum is tagged with <code>#[repr(Int)]</code> for some integral type
+<code>Int</code> (e.g., <code>#[repr(u8)]</code>), it will be represented as a C-union of a
+series of <code>#[repr(C)]</code> structs, one per variant. Each of these structs
+begins with an integral field containing the <strong>discriminant</strong>, which
+specifies which variant is active. They then contain the remaining
+fields associated with that variant.</p>
+<p><strong>Example.</strong> The following enum uses an <code>repr(u8)</code> annotation:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[repr(u8)]
+enum TwoCases {
+    A(u8, u16),
+    B(u16),
+}
+#}</code></pre></pre>
+<p>This will be laid out equivalently to the following more 
+complex Rust types:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[repr(C)]
+union TwoCasesRepr {
+    A: TwoCasesVariantA,
+    B: TwoCasesVariantB,
+}
+        
+# #[derive(Copy, Clone)]        
+#[repr(u8)]
+enum TwoCasesTag { A, B }
+
+# #[derive(Copy, Clone)]
+#[repr(C)]
+struct TwoCasesVariantA(TwoCasesTag, u8, u16);
+
+# #[derive(Copy, Clone)]
+#[repr(C)]
+struct TwoCasesVariantB(TwoCasesTag, u16);
+#}</code></pre></pre>
+<p>Note that the <code>TwoCasesVariantA</code> and <code>TwoCasesVariantB</code> structs are
+<code>#[repr(C)]</code>; this is needed to ensure that the <code>TwoCasesTag</code> value
+appears at offset 0 in both cases, so that we can read it to determine
+the current variant.</p>
+<h4><a class="header" href="#explicit-repr-annotation-with-c-compatibility" id="explicit-repr-annotation-with-c-compatibility">Explicit repr annotation with C compatibility</a></h4>
+<p>When the <code>#[repr]</code> tag includes <code>C</code>, e.g., <code>#[repr(C)]</code> or <code>#[repr(C, u8)]</code>, the layout of enums is changed to better match C++ enums. In
+this mode, the data is laid out as a tuple of <code>(discriminant, union)</code>,
+where <code>union</code> represents a C union of all the possible variants. The
+type of the discriminant will be the integral type specified (<code>u8</code>,
+etc) -- if no type is specified, then the compiler will select one
+based on what a size a fieldless enum would have with the same number of
+variants.</p>
+<p>This layout, while more compatible and arguably more obvious, is also
+less efficient than the non-C compatible layout in some cases in terms
+of total size. For example, the <code>TwoCases</code> example given in the
+preivous section only occupies 4 bytes with <code>#[repr(u8)]</code>, but would
+occupy 6 bytes with <code>#[repr(C, u8)]</code>, as more padding is required.</p>
+<p><strong>Example.</strong> The following enum:</p>
+<pre><code class="language-rust ignore">#[repr(C, Int)]
+enum MyEnum {
+    A(u32),
+    B(f32, u64),
+    C { x: u32, y: u8 },
+    D,
+}
+</code></pre>
+<p>is equivalent to the following Rust definition:</p>
+<pre><code class="language-rust ignore">#[repr(C)]
+struct MyEnumRepr {
+    tag: MyEnumTag,
+    payload: MyEnumPayload,
+}
+
+#[repr(Int)]
+enum MyEnumTag { A, B, C, D }
+
+#[repr(C)]
+union MyEnumPayload {
+   A: u32,
+   B: MyEnumPayloadB,
+   C: MyEnumPayloadC,
+   D: (),
+}
+
+#[repr(C)]
+struct MyEnumPayloadB(f32, u64);
+
+#[repr(C)]
+struct MyEnumPayloadC { x: u32, y: u8 }
+</code></pre>
+<p>This enum can also be represented in C++ as follows:</p>
+<pre><code class="language-c++">#include &lt;stdint.h&gt;
+
+enum class MyEnumTag: CppEquivalentOfInt { A, B, C, D };
+struct MyEnumPayloadB { float _0; uint64_t _1;  };
+struct MyEnumPayloadC { uint32_t x; uint8_t y; };
+
+union MyEnumPayload {
+   uint32_t A;
+   MyEnumPayloadB B;
+   MyEnumPayloadC C;
+};
+
+struct MyEnum {
+    MyEnumTag tag;
+    MyEnumPayload payload;
+};
+</code></pre>
+<h3><a class="header" href="#layout-of-a-data-carrying-enums-without-a-repr-annotation" id="layout-of-a-data-carrying-enums-without-a-repr-annotation">Layout of a data-carrying enums without a repr annotation</a></h3>
+<p>If no explicit <code>#[repr]</code> attribute is used, then the layout of a
+data-carrying enum is typically <strong>not specified</strong>. However, in certain
+select cases, there are <strong>guaranteed layout optimizations</strong> that may
+apply, as described below.</p>
+<h4><a class="header" href="#discriminant-elision-on-option-like-enums" id="discriminant-elision-on-option-like-enums">Discriminant elision on Option-like enums</a></h4>
+<p>(Meta-note: The content in this section is not fully described by any RFC and is
+therefore &quot;non-normative&quot;. Parts of it were specified in
+<a href="https://github.com/rust-lang/rust/pull/60300">rust-lang/rust#60300</a>).</p>
+<p><strong>Definition.</strong> An <strong>option-like enum</strong> is a 2-variant <code>enum</code> where:</p>
+<ul>
+<li>the <code>enum</code> has no explicit <code>#[repr(...)]</code>, and</li>
+<li>one variant has a single field, and</li>
+<li>the other variant has no fields (the &quot;unit variant&quot;).</li>
+</ul>
+<p>The simplest example is <code>Option&lt;T&gt;</code> itself, where the <code>Some</code> variant
+has a single field (of type <code>T</code>), and the <code>None</code> variant has no
+fields. But other enums that fit that same template fit.</p>
+<p><strong>Definition.</strong> The <strong>payload</strong> of an option-like enum is the single
+field which it contains; in the case of <code>Option&lt;T&gt;</code>, the payload has
+type <code>T</code>.</p>
+<p><strong>Definition.</strong> In some cases, the payload type may contain illegal
+values, which are called <strong><a href="layout/../glossary.html#niche">niches</a></strong>. For example, a value of type <code>&amp;T</code>
+may never be <code>NULL</code>, and hence defines a <a href="layout/../glossary.html#niche">niche</a> consisting of the
+bitstring <code>0</code>.  Similarly, the standard library types <a href="https://doc.rust-lang.org/std/num/struct.NonZeroU8.html"><code>NonZeroU8</code></a>
+and friends may never be zero, and hence also define the value of <code>0</code>
+as a <a href="layout/../glossary.html#niche">niche</a>. </p>
+<p>The <a href="layout/../glossary.html#niche">niche</a> values must be disjoint from the values allowed by the validity
+invariant. The validity invariant is, as of this writing, the current active
+discussion topic in the unsafe code guidelines process. <a href="https://github.com/rust-lang/rust/pull/60300">rust-lang/rust#60300</a>
+specifies that the following types have at least one <a href="layout/../glossary.html#niche">niche</a> (the all-zeros
+bit-pattern):</p>
+<ul>
+<li><code>&amp;T</code></li>
+<li><code>&amp;mut T</code></li>
+<li><code>extern &quot;C&quot; fn</code></li>
+<li><code>core::num::NonZero*</code></li>
+<li><code>core::ptr::NonNull&lt;T&gt;</code></li>
+<li><code>#[repr(transparent)] struct</code> around one of the types in this list.</li>
+</ul>
+<p><strong>Option-like enums where the payload defines at least one <a href="layout/../glossary.html#niche">niche</a> value
+are guaranteed to be represented using the same memory layout as their
+payload.</strong> This is called <strong>discriminant elision</strong>, as there is no
+explicit discriminant value stored anywhere. Instead, <a href="layout/../glossary.html#niche">niche</a> values are
+used to represent the unit variant.</p>
+<p>The most common example is that <code>Option&lt;&amp;u8&gt;</code> can be represented as an
+nullable <code>&amp;u8</code> reference -- the <code>None</code> variant is then represented
+using the <a href="layout/../glossary.html#niche">niche</a> value zero. This is because a valid <code>&amp;u8</code> value can
+never be zero, so if we see a zero value, we know that this must be
+<code>None</code> variant.</p>
+<p><strong>Example.</strong> The type <code>Option&lt;&amp;u32&gt;</code> will be represented at runtime as
+a nullable pointer. FFI interop often depends on this property.</p>
+<p><strong>Example.</strong> As <code>fn</code> types are non-nullable, the type <code>Option&lt;extern &quot;C&quot; fn()&gt;</code> will be represented at runtime as a nullable function
+pointer (which is therefore equivalent to a C function pointer) . FFI
+interop often depends on this property.</p>
+<p><strong>Example.</strong> The following enum definition is <strong>not</strong> option-like,
+as it has two unit variants:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+enum Enum1&lt;T&gt; {
+  Present(T),
+  Absent1,
+  Absent2,
+}
+#}</code></pre></pre>
+<p><strong>Example.</strong> The following enum definition is <strong>not</strong> option-like,
+as it has an explicit <code>repr</code> attribute.</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[repr(u8)]
+enum Enum2&lt;T&gt; {
+  Present(T),
+  Absent1,
+}
+#}</code></pre></pre>
+<h2><a class="header" href="#unresolved-questions-1" id="unresolved-questions-1">Unresolved questions</a></h2>
+<h3><a class="header" href="#layout-of-single-variant-enums" id="layout-of-single-variant-enums">Layout of single variant enums</a></h3>
+<p><a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/79">Issue #79.</a></p>
+<p>Enums that contain a <strong>single variant</strong> and which do not have an
+explicit <code>#[repr]</code> annotation are an important special case. Since
+there is only a single variant, the enum must be instantiated with
+that variant, which means that the enum is in fact equivalent to a
+struct. The question then is to what extent we should <strong>guarantee</strong>
+that the two share an equivalent layout, and also how to define the
+interaction with uninhabited types.</p>
+<p>As presently implemented, the compiler will use the same layout for
+structs and for single variant enums (as long as they do not have a
+<code>#[repr]</code> annotation that overrides that choice). So, for example, the
+struct <code>SomeStruct</code> and the enum <code>SomeEnum</code> would have an equivalent
+layout (<a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2018&amp;gist=3697ac684c3d021892694956df957653">playground</a>):</p>
+<pre><pre class="playpen"><code class="language-rust">struct SomeStruct;
+enum SomeEnum {
+  SomeVariant,
+}
+
+# fn main() {
+# use std::mem;
+let x = SomeStruct;
+let y = SomeEnum::SomeVariant;
+assert_eq!(
+    mem::size_of_val(&amp;x), 
+    mem::size_of_val(&amp;y),
+    &quot;types have different sizes&quot;,
+);
+println!(&quot;types both have size {}&quot;, std::mem::size_of_val(&amp;x));
+# }
+</code></pre></pre>
+<p>Similarly, the struct <code>SomeStruct</code> and the enum <code>SomeVariant</code> in this
+example would also be equivalent in their layout
+(<a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2018&amp;gist=924724764419f846c788a8763da45992">playground</a>):</p>
+<pre><pre class="playpen"><code class="language-rust">struct SomeStruct { x: u32 }
+enum SomeEnum {
+  SomeVariant { x: u32 },
+}
+
+# fn main() {
+# use std::mem;
+let x = SomeStruct { x: 22 };
+let y = SomeEnum::SomeVariant { x: 22 };
+assert_eq!(
+    mem::size_of_val(&amp;x), 
+    mem::size_of_val(&amp;y),
+    &quot;types have different sizes&quot;,
+);
+println!(&quot;types both have size {}&quot;, mem::size_of_val(&amp;x));
+}
+</code></pre></pre>
+<p>In fact, the compiler will use this optimized layout even for enums
+that define multiple variants, as long as all but one of the variants
+is uninhabited
+(<a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2018&amp;gist=3cc1484c5b91097f3dc2015b7c207a0e">playground</a>):</p>
+<pre><pre class="playpen"><code class="language-rust"># enum Void { }
+struct SomeStruct { x: u32 }
+enum SomeEnum {
+  SomeVariant { x: u32 },
+  UninhabitedVariant { y: Void },
+}
+
+# fn main() {
+# use std::mem;
+let x = SomeStruct { x: 22 };
+let y = SomeEnum::SomeVariant { x: 22 };
+assert_eq!(
+    mem::size_of_val(&amp;x), 
+    mem::size_of_val(&amp;y),
+    &quot;types have different sizes&quot;,
+);
+println!(&quot;types both have size {}&quot;, mem::size_of_val(&amp;x));
+# }
+</code></pre></pre>
+<h1><a class="header" href="#layout-of-unions" id="layout-of-unions">Layout of unions</a></h1>
+<p><strong>Disclaimer:</strong> This chapter represents the consensus from issue
+<a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/13">#13</a>.  The statements in here are not (yet) &quot;guaranteed&quot;
+not to change until an RFC ratifies them.</p>
+<p>The only degree of freedom the compiler has when computing the layout of a union
+like</p>
+<pre><code class="language-rust ignore">union U { f1: T1, f2: T2 }
+</code></pre>
+<p>is to determine the offset of the fields.  The layout of these fields themselves
+is already entirely determined by their types, and since we intend to allow
+creating references to fields (<code>&amp;u.f1</code>), unions do not have any wiggle-room
+there.</p>
+<h3><a class="header" href="#c-compatible-layout-repr-c-1" id="c-compatible-layout-repr-c-1">C-compatible layout (&quot;repr C&quot;)</a></h3>
+<p>For unions tagged <code>#[repr(C)]</code>, the compiler will apply the C layout scheme.  Per
+sections <a href="http://port70.net/%7Ensz/c/c11/n1570.html#6.5.8p5">6.5.8.5</a> and <a href="http://port70.net/%7Ensz/c/c11/n1570.html#6.7.2.1p16">6.7.2.1.16</a> of the C11 specification, this means that
+the offset of every field is 0.  Unsafe code can cast a pointer to the union to
+a field type to obtain a pointer to any field, and vice versa.</p>
+<h3><a class="header" href="#default-layout-repr-rust-1" id="default-layout-repr-rust-1">Default layout (&quot;repr rust&quot;)</a></h3>
+<p><strong>The default layout of unions is not specified.</strong> As of this writing, we want
+to keep the option of using non-zero offsets open for the future; whether this
+is useful depends on what exactly the compiler-assumed invariants about union
+contents are.</p>
+<p>Even if the offsets happen to be all 0, there might still be differences in the
+function call ABI.  If you need to pass unions by-value across an FFI boundary,
+you have to use <code>#[repr(C)]</code>.</p>
+<h1><a class="header" href="#layout-of-reference-and-pointer-types" id="layout-of-reference-and-pointer-types">Layout of reference and pointer types</a></h1>
+<h3><a class="header" href="#terminology" id="terminology">Terminology</a></h3>
+<p>Reference types are types of the form <code>&amp;T</code>, <code>&amp;mut T</code>.</p>
+<p>Raw pointer types are types of the form <code>*const T</code> or <code>*mut T</code>.</p>
+<h3><a class="header" href="#representation" id="representation">Representation</a></h3>
+<p>The alignment of <code>&amp;T</code>, <code>&amp;mut T</code>, <code>*const T</code> and <code>*mut T</code> are the same,
+and are at least the word size.</p>
+<ul>
+<li>If <code>T</code> is a sized type then the alignment of <code>&amp;T</code> is the word size.</li>
+<li>The alignment of <code>&amp;dyn Trait</code> is the word size.</li>
+<li>The alignment of <code>&amp;[T]</code> is the word size.</li>
+<li>The alignment of <code>&amp;str</code> is the word size.</li>
+<li>Alignment in other cases may be more than the word size (e.g., for other dynamically sized types).</li>
+</ul>
+<p>The sizes of <code>&amp;T</code>, <code>&amp;mut T</code>, <code>*const T</code> and <code>*mut T</code> are the same,
+and are at least one word.</p>
+<ul>
+<li>If <code>T</code> is a sized type then the size of <code>&amp;T</code> is one word.</li>
+<li>The size of <code>&amp;dyn Trait</code> is two words.</li>
+<li>The size of <code>&amp;[T]</code> is two words.</li>
+<li>The size of <code>&amp;str</code> is two words.</li>
+<li>Size in other cases may be more than one word (e.g., for other dynamically sized types).</li>
+</ul>
+<h3><a class="header" href="#notes" id="notes">Notes</a></h3>
+<p>The layouts of <code>&amp;T</code>, <code>&amp;mut T</code>, <code>*const T</code> and <code>*mut T</code> are the same.</p>
+<p>If <code>T</code> is sized, references and pointers to <code>T</code> have a size and alignment of one
+word and have therefore the same layout as C pointers.</p>
+<blockquote>
+<p><strong>warning</strong>: while the layout of references and pointers is compatible with
+the layout of C pointers, references come with a <em>validity</em> invariant that
+does not allow them to be used when they could be <code>NULL</code>, unaligned, dangling,
+or, in the case of <code>&amp;mut T</code>, aliasing.</p>
+</blockquote>
+<p>We do not make any guarantees about the layout of
+multi-trait objects <code>&amp;(dyn Trait1 + Trait2)</code> or references to other dynamically sized types,
+other than that they are at least word-aligned, and have size at least one word.</p>
+<p>The layout of <code>&amp;dyn Trait</code> when <code>Trait</code> is a trait is the same as that of:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[repr(C)]
+struct DynObject {
+  data: *const u8,
+  vtable: *const u8,
+}
+#}</code></pre></pre>
+<blockquote>
+<p><strong>note</strong>: In the layout of <code>&amp;dyn mut Trait</code> the field <code>data</code> is of the type <code>*mut u8</code>.</p>
+</blockquote>
+<p>The layout of <code>&amp;[T]</code> is the same as that of:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[repr(C)]
+struct Slice&lt;T&gt; {
+  ptr: *const T,
+  len: usize,
+}
+#}</code></pre></pre>
+<blockquote>
+<p><strong>note</strong>: In the layout of <code>&amp;mut [T]</code> the field <code>ptr</code> is of the type <code>*mut T</code>.</p>
+</blockquote>
+<p>The layout of <code>&amp;str</code> is the same as that of <code>&amp;[u8]</code>, and the layout of <code>&amp;mut str</code> is
+the same as that of <code>&amp;mut [u8]</code>.</p>
+<h1><a class="header" href="#representation-of-function-pointers" id="representation-of-function-pointers">Representation of Function Pointers</a></h1>
+<h3><a class="header" href="#terminology-1" id="terminology-1">Terminology</a></h3>
+<p>In Rust, a function pointer type, is either <code>fn(Args...) -&gt; Ret</code>,
+<code>extern &quot;ABI&quot; fn(Args...) -&gt; Ret</code>, <code>unsafe fn(Args...) -&gt; Ret</code>, or
+<code>unsafe extern &quot;ABI&quot; fn(Args...) -&gt; Ret</code>.
+A function pointer is the address of a function,
+and has function pointer type.
+The pointer is implicit in the <code>fn</code> type,
+and they have no lifetime of their own;
+therefore, function pointers are assumed to point to
+a block of code with static lifetime.
+This is not necessarily always true,
+since, for example, you can unload a dynamic library.
+Therefore, this is <em>only</em> a safety invariant,
+not a validity invariant;
+as long as one doesn't call a function pointer which points to freed memory,
+it is not undefined behavior.</p>
+<p>In C, a function pointer type is <code>Ret (*)(Args...)</code>, or <code>Ret ABI (*)(Args...)</code>,
+and values of function pointer type are either a null pointer value,
+or the address of a function.</p>
+<h3><a class="header" href="#representation-1" id="representation-1">Representation</a></h3>
+<p>The ABI and layout of <code>(unsafe)? (extern &quot;ABI&quot;)? fn(Args...) -&gt; Ret</code>
+is exactly that of the corresponding C type --
+the lack of a null value does not change this. 
+On common platforms, this means that <code>*const ()</code> and <code>fn(Args...) -&gt; Ret</code> have
+the same ABI and layout. This is, in fact, guaranteed by POSIX and Windows.
+This means that for the vast majority of platforms,</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+fn go_through_pointer(x: fn()) -&gt; fn() {
+  let ptr = x as *const ();
+  unsafe { std::mem::transmute::&lt;*const (), fn()&gt;(ptr) }
+}
+#}</code></pre></pre>
+<p>is both perfectly safe, and, in fact, required for some APIs -- notably,
+<code>GetProcAddress</code> on Windows requires you to convert from <code>void (*)()</code> to
+<code>void*</code>, to get the address of a variable;
+and the opposite is true of <code>dlsym</code>, which requires you to convert from
+<code>void*</code> to <code>void (*)()</code> in order to get the address of functions.
+This conversion is <em>not</em> guaranteed by Rust itself, however;
+simply the implementation. If the underlying platform allows this conversion,
+so will Rust.</p>
+<p>However, null values are not supported by the Rust function pointer types --
+just like references, the expectation is that you use <code>Option</code> to create
+nullable pointers. <code>Option&lt;fn(Args...) -&gt; Ret&gt;</code> will have the exact same ABI
+as <code>fn(Args...) -&gt; Ret</code>, but additionally allows null pointer values.</p>
+<h3><a class="header" href="#use" id="use">Use</a></h3>
+<p>Function pointers are mostly useful for talking to C -- in Rust, you would
+mostly use <code>T: Fn()</code> instead of <code>fn()</code>. If talking to a C API,
+the same caveats as apply to other FFI code should be followed.
+As an example, we shall implement the following C interface in Rust:</p>
+<pre><code class="language-c">struct Cons {
+  int data;
+  struct Cons *next;
+};
+
+struct Cons *cons(struct Cons *self, int data);
+
+/*
+  notes:
+    - func must be non-null
+    - thunk may be null, and shall be passed unchanged to func
+    - self may be null, in which case no iteration is done
+*/
+
+void iterate(struct Cons const *self, void (*func)(int, void *), void *thunk);
+bool for_all(struct Cons const *self, bool (*func)(int, void *), void *thunk);
+</code></pre>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+# use std::{
+#    ffi::c_void,
+#    os::raw::c_int,
+# };
+#
+pub struct Cons {
+  data: c_int,
+  next: Option&lt;Box&lt;Cons&gt;&gt;,
+}
+
+#[no_mangle]
+pub extern &quot;C&quot; fn cons(node: Option&lt;Box&lt;Cons&gt;&gt;, data: c_int) -&gt; Box&lt;Cons&gt; {
+  Box::new(Cons { data, next: node })
+}
+
+#[no_mangle]
+pub unsafe extern &quot;C&quot; fn iterate(
+  node: Option&lt;&amp;Cons&gt;, 
+  func: unsafe extern &quot;C&quot; fn(i32, *mut c_void), // note - non-nullable
+  thunk: *mut c_void, // note - this is a thunk, so it's just passed raw
+) {
+  let mut it = node;
+  while let Some(node) = it {
+    func(node.data, thunk);
+    it = node.next.as_ref().map(|x| &amp;**x);
+  }
+}
+
+#[no_mangle]
+pub unsafe extern &quot;C&quot; fn for_all(
+  node: Option&lt;&amp;Cons&gt;, 
+  func: unsafe extern &quot;C&quot; fn(i32, *mut c_void) -&gt; bool,
+  thunk: *mut c_void,
+) -&gt; bool {
+  let mut it = node;
+  while let Some(node) = node {
+    if !func(node.data, thunk) {
+      return false;
+    }
+    it = node.next.as_ref().map(|x| &amp;**x);
+  }
+  true
+}
+#}</code></pre></pre>
+<h1><a class="header" href="#layout-of-rust-array-types-and-slices" id="layout-of-rust-array-types-and-slices">Layout of Rust array types and slices</a></h1>
+<h2><a class="header" href="#layout-of-rust-array-types" id="layout-of-rust-array-types">Layout of Rust array types</a></h2>
+<p>Array types, <code>[T; N]</code>, store <code>N</code> values of type <code>T</code> with a constant <em>stride</em>.
+Here, <em>stride</em> is the distance between each pair of consecutive values within
+the array.</p>
+<p>The <em>offset</em> of the first array element is <code>0</code>, that is, a pointer to the array
+and a pointer to its first element both point to the same memory address.</p>
+<p>The <em>alignment</em> of array types is greater or equal to the alignment of its
+element type. If the element type is <code>repr(C)</code> the layout of the array is
+guaranteed to be the same as the layout of a C array with the same element type.</p>
+<blockquote>
+<p><strong>Note</strong>: the type of array arguments in C function signatures, e.g., <code>void foo(T x[N])</code>, decays to a pointer. That is, these functions do not take arrays
+as an arguments, they take a pointer to the first element of the array
+instead. Array types are therefore <em>improper C types</em> (not C FFI safe) in Rust
+foreign function declarations, e.g., <code>extern { fn foo(x: [T; N]) -&gt; [U; M]; }</code>. Pointers to arrays are fine: <code>extern { fn foo(x: *const [T; N]) -&gt; *const [U; M]; }</code>, and <code>struct</code>s and <code>union</code>s containing arrays are also fine.</p>
+</blockquote>
+<p>The <em>stride</em> of the array is constant for all element pairs and it is computed
+as the <em>size</em> of the element type rounded up to the next multiple of the
+<em>alignment</em> of the element type.</p>
+<h3><a class="header" href="#arrays-of-zero-size" id="arrays-of-zero-size">Arrays of zero-size</a></h3>
+<p>Arrays <code>[T; N]</code> have zero size if and only if their count <code>N</code> is zero or their
+element type <code>T</code> is zero-sized.</p>
+<h3><a class="header" href="#special-case-stride--size" id="special-case-stride--size">Special case <code>stride == size</code></a></h3>
+<p>When the element <em>size</em> is a multiple of the element's <em>alignment</em>, then <code>stride == size</code>, and the elements are laid out contiguously in memory, e.g., <code>[u8; 4]</code>.
+In this case, the <em>size</em> of the array can be computed as <code>size_of::&lt;T&gt;() * N</code>,
+and a pointer to the <code>i</code>-th element of the array can be obtained by offsetting a
+pointer to the first element of the array by <code>i</code><sup class="footnote-reference"><a href="#1">1</a></sup>.</p>
+<blockquote>
+<p><strong>Note:</strong> In the current Rust implementation, <em>size</em> is always a multiple of
+the element's <em>alignment</em>, and therefore <code>stride == size</code> always holds. This
+is, however, not guaranteed by the <a href="layout/./structs-and-tuples.html">layout of structs and tuples</a>.</p>
+</blockquote>
+<div class="footnote-definition" id="1"><sup class="footnote-definition-label">1</sup>
+<p>When <code>stride &gt; size</code> the pointer needs to be advanced by the array
+<em>stride</em> instead of by the element <em>size</em>.</p>
+</div>
+<h3><a class="header" href="#layout-compatibility-with-packed-simd-vectors" id="layout-compatibility-with-packed-simd-vectors">Layout compatibility with packed SIMD vectors</a></h3>
+<p>The <a href="layout/packed-simd-vectors.html">layout of packed SIMD vector types</a> <sup class="footnote-reference"><a href="#2">2</a></sup> requires the <em>size</em> and
+<em>alignment</em> of the vector elements to match. That is, types with <a href="layout/packed-simd-vectors.html">packed SIMD
+vector</a> layout are layout compatible with arrays having the same element
+type and the same number of elements as the vector.</p>
+<div class="footnote-definition" id="2"><sup class="footnote-definition-label">2</sup>
+<p>The <a href="layout/packed-simd-vectors.html">packed SIMD vector</a> layout is the layout of <code>repr(simd)</code> types like <a href="https://doc.rust-lang.org/core/arch/x86_64/struct.__m128.html"><code>__m128</code></a>.</p>
+</div>
+<h2><a class="header" href="#layout-of-rust-slices" id="layout-of-rust-slices">Layout of Rust slices</a></h2>
+<p>The layout of a slice <code>[T]</code> of length <code>N</code> is the same as that of a <code>[T; N]</code> array. </p>
+<h2><a class="header" href="#unresolved-questions-2" id="unresolved-questions-2">Unresolved questions</a></h2>
+<h3><a class="header" href="#guaranteeing-stride--size-" id="guaranteeing-stride--size-">Guaranteeing <code>stride == size</code> ?</a></h3>
+<p>Currently, the <a href="layout/./structs-and-tuples.html">layout of structs and tuples</a> does not guarantee that the
+element <em>size</em> is a multiple of its <em>alignment</em>. For example, consider:</p>
+<pre><code class="language-rust ignore">struct A(u16, u8);
+type B = [A; 4];
+</code></pre>
+<p>In the current Rust implementation, <code>A</code> has an alignment and a size of <code>4</code>, and
+<code>B</code> has a size of <code>16</code>, such that <code>B</code> contains four <code>A</code>s that are contiguously
+laid in memory. </p>
+<p>However, a future Rust implementation could implement a layout optimization that
+reduces the size of <code>A</code> to <code>3</code>. For the elements of <code>B</code> to be properly aligned,
+<code>B</code> would need to choose a <code>stride == 4</code>, resulting in a <code>stride &gt; size</code>.</p>
+<p>Guaranteeing <code>stride &gt;= size</code> is forward-compatible with such
+layout-optimization proposals:</p>
+<ul>
+<li><a href="https://github.com/rust-lang/rfcs/issues/1397">rust-lang/rfcs/1397: Spearate size and stride for types</a></li>
+<li><a href="https://github.com/rust-lang/rust/issues/17027">rust-lang/rust/17027: Collapse trailing padding</a></li>
+</ul>
+<h1><a class="header" href="#layout-of-packed-simd-vectors" id="layout-of-packed-simd-vectors">Layout of packed SIMD vectors</a></h1>
+<p><strong>Disclaimer:</strong> This chapter represents the consensus from issue
+<a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/38">#38</a>. The statements in here are not (yet) &quot;guaranteed&quot;
+not to change until an RFC ratifies them.</p>
+<p>Rust currently exposes packed<sup class="footnote-reference"><a href="#1">1</a></sup> SIMD vector types like <code>__m128</code> to users, but it
+does not expose a way for users to construct their own vector types.</p>
+<p>The set of currently-exposed packed SIMD vector types is
+<em>implementation-defined</em> and it is currently different for each architecture.</p>
+<div class="footnote-definition" id="1"><sup class="footnote-definition-label">1</sup>
+<p><em>packed</em> denotes that these SIMD vectors have a compile-time fixed size,
+distinguishing these from SIMD vector types whose size is only known at
+run-time. Rust currently only supports <em>packed</em> SIMD vector types. This is
+elaborated further in <a href="https://github.com/gnzlbg/rfcs/blob/ppv/text/0000-ppv.md#interaction-with-cray-vectors">RFC2366</a>.</p>
+</div>
+<h2><a class="header" href="#packed-simd-vector-types" id="packed-simd-vector-types">Packed SIMD vector types</a></h2>
+<p>Packed SIMD vector types are <code>repr(simd)</code> homogeneous tuple-structs containing
+<code>N</code> elements of type <code>T</code> where <code>N</code> is a power-of-two and the size and alignment
+requirements of <code>T</code> are equal:</p>
+<pre><code class="language-rust ignore">#[repr(simd)]
+struct Vector&lt;T, N&gt;(T_0, ..., T_(N - 1));
+</code></pre>
+<p>The set of supported values of <code>T</code> and <code>N</code> is <em>implementation-defined</em>.</p>
+<p>The size of <code>Vector</code> is <code>N * size_of::&lt;T&gt;()</code> and its alignment is an
+<em>implementation-defined</em> function of <code>T</code> and <code>N</code> greater than or equal to
+<code>align_of::&lt;T&gt;()</code>. That is:</p>
+<pre><code class="language-rust ignore">assert_eq!(size_of::&lt;Vector&lt;T, N&gt;&gt;(), size_of::&lt;T&gt;() * N);
+assert!(align_of::&lt;Vector&lt;T, N&gt;&gt;() &gt;= align_of::&lt;T&gt;());
+</code></pre>
+<p>That is, two distinct <code>repr(simd)</code> vector types that have the same <code>T</code> and the
+same <code>N</code> have the same size and alignment.</p>
+<p>Vector elements are laid out in source field order, enabling random access to
+vector elements by reinterpreting the vector as an array:</p>
+<pre><code class="language-rust ignore">union U {
+   vec: Vector&lt;T, N&gt;,
+   arr: [T; N]
+}
+
+assert_eq!(size_of::&lt;Vector&lt;T, N&gt;&gt;(), size_of::&lt;[T; N]&gt;());
+assert!(align_of::&lt;Vector&lt;T, N&gt;&gt;() &gt;= align_of::&lt;[T; N]&gt;());
+
+unsafe {
+  let u = U { vec: Vector&lt;T, N&gt;(t_0, ..., t_(N - 1)) };
+
+  assert_eq!(u.vec.0, u.arr[0]);
+  // ... 
+  assert_eq!(u.vec.(N - 1), u.arr[N - 1]);
+}
+</code></pre>
+<h3><a class="header" href="#unresolved-questions-3" id="unresolved-questions-3">Unresolved questions</a></h3>
+<ul>
+<li>
+<p><strong>Blocked</strong>: Should the layout of packed SIMD vectors be the same as that of
+homogeneous tuples ? Such that:</p>
+<pre><code class="language-rust ignore">union U {
+  vec: Vector&lt;T, N&gt;,
+  tup: (T_0, ..., T_(N-1)),
+}
+
+assert_eq!(size_of::&lt;Vector&lt;T, N&gt;&gt;(), size_of::&lt;(T_0, ..., T_(N-1))&gt;());
+assert!(align_of::&lt;Vector&lt;T, N&gt;&gt;() &gt;= align_of::&lt;(T_0, ..., T_(N-1))&gt;());
+
+unsafe {
+  let u = U { vec: Vector(t_0, ..., t_(N - 1)) };
+
+  assert_eq!(u.vec.0, u.tup.0);
+  // ... 
+  assert_eq!(u.vec.(N - 1), u.tup.(N - 1));
+}
+</code></pre>
+<p>This is blocked on the resolution of issue <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/36">#36</a> about the layout of
+homogeneous structs and tuples.</p>
+</li>
+<li>
+<p><code>MaybeUninit&lt;T&gt;</code> does not have the same <code>repr</code> as <code>T</code>, so
+<code>MaybeUninit&lt;Vector&lt;T, N&gt;&gt;</code> are not <code>repr(simd)</code>, which has performance
+consequences and means that <code>MaybeUninit&lt;Vector&lt;T, N&gt;&gt;</code> is not C-FFI safe.</p>
+</li>
+</ul>
+<h1><a class="header" href="#validity" id="validity">Validity</a></h1>
+<h1><a class="header" href="#validity-of-unions" id="validity-of-unions">Validity of unions</a></h1>
+<p><strong>Disclaimer</strong>: This chapter is a work-in-progress. What's contained here
+represents the consensus from issue <a href="https://github.com/rust-lang/unsafe-code-guidelines/issues/73">#73</a>. The statements in here are not (yet)
+&quot;guaranteed&quot; not to change until an RFC ratifies them.</p>
+<h2><a class="header" href="#validity-of-unions-with-zero-sized-fields" id="validity-of-unions-with-zero-sized-fields">Validity of unions with zero-sized fields</a></h2>
+<p>A union containing a zero-sized field can contain any bit pattern. An example of such
+an union is <a href="https://doc.rust-lang.org/std/mem/union.MaybeUninit.html"><code>MaybeUninit</code></a>.</p>
+<h1><a class="header" href="#optimizations" id="optimizations">Optimizations</a></h1>
+<p>We should turn</p>
+<pre><code class="language-rust ignore">// y unused
+let mut x = f();
+g(&amp;mut x);
+y = x;
+// x unused
+</code></pre>
+<p>into</p>
+<pre><code class="language-rust ignore">y = f();
+g(&amp;mut y);
+</code></pre>
+<p>to avoid a copy.</p>
+<p>The potential issue here is <code>g</code> storing the pointer it got as an argument elsewhere.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+        
+        <script type="text/javascript">
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+        
+        
+
+    </body>
+</html>

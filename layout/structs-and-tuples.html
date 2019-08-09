@@ -1,0 +1,536 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Structs and tuples - Unsafe Code Guidelines Reference</title>
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li><a href="../introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><a href="../glossary.html"><strong aria-hidden="true">2.</strong> Glossary</a></li><li><a href="../layout.html"><strong aria-hidden="true">3.</strong> Data layout</a></li><li><ol class="section"><li><a href="../layout/structs-and-tuples.html" class="active"><strong aria-hidden="true">3.1.</strong> Structs and tuples</a></li><li><a href="../layout/scalars.html"><strong aria-hidden="true">3.2.</strong> Scalars</a></li><li><a href="../layout/enums.html"><strong aria-hidden="true">3.3.</strong> Enums</a></li><li><a href="../layout/unions.html"><strong aria-hidden="true">3.4.</strong> Unions</a></li><li><a href="../layout/pointers.html"><strong aria-hidden="true">3.5.</strong> Pointers</a></li><li><a href="../layout/function-pointers.html"><strong aria-hidden="true">3.6.</strong> Function pointers</a></li><li><a href="../layout/arrays-and-slices.html"><strong aria-hidden="true">3.7.</strong> Arrays and Slices</a></li><li><a href="../layout/packed-simd-vectors.html"><strong aria-hidden="true">3.8.</strong> Packed SIMD vectors</a></li></ol></li><li><a href="../validity.html"><strong aria-hidden="true">4.</strong> Validity</a></li><li><ol class="section"><li><a href="../validity/unions.html"><strong aria-hidden="true">4.1.</strong> Unions</a></li></ol></li><li><a href="../optimizations.html"><strong aria-hidden="true">5.</strong> Optimizations</a></li><li><ol class="section"><li><a href="../optimizations/return_value_optimization.html"><strong aria-hidden="true">5.1.</strong> Return value optimization</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Unsafe Code Guidelines Reference</h1>
+
+                        <div class="right-buttons">
+                            <a href="../print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#layout-of-structs-and-tuples" id="layout-of-structs-and-tuples">Layout of structs and tuples</a></h1>
+<p><strong>Disclaimer:</strong> This chapter represents the consensus from issues
+<a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/11">#11</a> and <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/12">#12</a>.  The statements in here are not (yet) &quot;guaranteed&quot;
+not to change until an RFC ratifies them.</p>
+<h2><a class="header" href="#tuple-types" id="tuple-types">Tuple types</a></h2>
+<p>In general, an anonymous tuple type <code>(T1..Tn)</code> of arity N is laid out
+&quot;as if&quot; there were a corresponding tuple struct declared in libcore:</p>
+<pre><code class="language-rust ignore">#[repr(Rust)]
+struct TupleN&lt;P1..Pn:?Sized&gt;(P1..Pn);
+</code></pre>
+<p>In this case, <code>(T1..Tn)</code> would be compatible with <code>TupleN&lt;T1..Tn&gt;</code>.
+As discussed below, this generally means that the compiler is <strong>free
+to re-order field layout</strong> as it wishes. Thus, if you would like a
+guaranteed layout from a tuple, you are generally advised to create a
+named struct with a <code>#[repr(C)]</code> annotation (see <a href="#structs">the section on
+structs for more details</a>).</p>
+<p>Note that the final element of a tuple (<code>Pn</code>) is marked as <code>?Sized</code> to
+permit unsized tuple coercion -- this is implemented on nightly but is
+currently unstable (<a href="https://github.com/rust-lang/rust/issues/42877">tracking issue</a>). In the future, we may
+extend unsizing to other elements of tuples as well.</p>
+<h3><a class="header" href="#other-notes-on-tuples" id="other-notes-on-tuples">Other notes on tuples</a></h3>
+<p>Some related discussion:</p>
+<ul>
+<li><a href="https://github.com/rust-lang/rfcs/pull/1582">RFC #1582</a> proposed
+that tuple structs should have a &quot;nested layout&quot;, where
+e.g. <code>(T1, T2, T3)</code> would in fact be laid out as <code>(T1, (T2, T3))</code>. The purpose of this was to permit variadic matching and so
+forth against some suffix of the struct. This RFC was not accepted,
+however. This layout requires extra padding and seems somewhat
+surprising: it means that the layout of tuples and tuple structs
+would diverge significantly from structs with named fields.</li>
+</ul>
+<p><a name="structs"></a></p>
+<h2><a class="header" href="#struct-types" id="struct-types">Struct types</a></h2>
+<p>Structs come in two principle varieties:</p>
+<pre><code class="language-rust ignore">// Structs with named fields
+struct Foo { f1: T1, .., fn: Tn }
+
+// Tuple structs
+struct Foo(T1, .., Tn);
+</code></pre>
+<p>In terms of their layout, tuple structs can be understood as
+equivalent to a named struct with fields named <code>0..n-1</code>:</p>
+<pre><code class="language-rust ignore">struct Foo {
+  0: T1,
+  ...
+  n-1: Tn
+}
+</code></pre>
+<p>(In fact, one may use such field names in patterns or in accessor
+expressions like <code>foo.0</code>.)</p>
+<p>Structs can have various <code>#[repr]</code> flags that influence their layout:</p>
+<ul>
+<li><code>#[repr(Rust)]</code> -- the default.</li>
+<li><code>#[repr(C)]</code> -- request C compatibility</li>
+<li><code>#[repr(align(N))]</code> -- specify the alignment</li>
+<li><code>#[repr(packed)]</code> -- request packed layout where fields are not internally aligned</li>
+<li><code>#[repr(transparent)]</code> -- request that a &quot;wrapper struct&quot; be treated
+&quot;as if&quot; it were an instance of its field type when passed as an
+argument</li>
+</ul>
+<h3><a class="header" href="#default-layout-repr-rust" id="default-layout-repr-rust">Default layout (&quot;repr rust&quot;)</a></h3>
+<p><strong>The default layout of structs is not specified.</strong> As of this
+writing, we have not reached a full consensus on what limitations
+should exist on possible field struct layouts, so effectively one must
+assume that the compiler can select any layout it likes for each
+struct on each compilation, and it is not required to select the same
+layout across two compilations. This implies that (among other things)
+two structs with the same field types may not be laid out in the same
+way (for example, the hypothetical struct representing tuples may be
+laid out differently from user-declared structs).</p>
+<p>Known things that can influence layout (non-exhaustive):</p>
+<ul>
+<li>the type of the struct fields and the layout of those types</li>
+<li>compiler settings, including esoteric choices like optimization fuel</li>
+</ul>
+<p><strong>A note on determinism.</strong> The definition above does not guarantee
+determinism between executions of the compiler -- two executions may
+select different layouts, even if all inputs are identical. Naturally,
+in practice, the compiler aims to produce deterministic output for a
+given set of inputs. However, it is difficult to produce a
+comprehensive summary of the various factors that may affect the
+layout of structs, and so for the time being we have opted for a
+conservative definition.</p>
+<p><strong>Compiler's current behavior.</strong> As of the time of this writing, the
+compiler will reorder struct fields to minimize the overall size of
+the struct (and in particular to eliminate padding due to alignment
+restrictions).</p>
+<p>Layout is presently defined not in terms of a &quot;fully monomorphized&quot;
+struct definition but rather in terms of its generic definition along
+with a set of substitutions (values for each type parameter; lifetime
+parameters do not affect layout). This distinction is important
+because of <em>unsizing</em> -- if the final field has generic type, the
+compiler will not reorder it, to allow for the possibility of
+unsizing. E.g., <code>struct Foo { x: u16, y: u32 }</code> and <code>struct Foo&lt;T&gt; { x: u16, y: T }</code> where <code>T = u32</code> are not guaranteed to be identical.</p>
+<h4><a class="header" href="#zero-sized-structs" id="zero-sized-structs">Zero-sized structs</a></h4>
+<p>For <code>repr(Rust)</code>, <code>repr(packed(N))</code>, <code>repr(align(N))</code>, and <code>repr(C)</code>
+structs: if all fields of a struct have size 0, then the struct has size 0.</p>
+<p>For example, all these types are zero-sized:</p>
+<pre><pre class="playpen"><code class="language-rust"># use std::mem::size_of;
+#[repr(align(32))] struct Zst0;
+#[repr(C)] struct Zst1(Zst0);
+struct Zst2(Zst1, Zst0);
+# fn main() {
+# assert_eq!(size_of::&lt;Zst0&gt;(), 0);
+# assert_eq!(size_of::&lt;Zst1&gt;(), 0);
+# assert_eq!(size_of::&lt;Zst2&gt;(), 0);
+# }
+</code></pre></pre>
+<h4><a class="header" href="#unresolved-questions" id="unresolved-questions">Unresolved questions</a></h4>
+<p>During the course of the discussion in <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/11">#11</a> and <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/12">#12</a>, various
+suggestions arose to limit the compiler's flexibility. These questions
+are currently considering <strong>unresolved</strong> and -- for each of them -- an
+issue has been opened for further discussion on the repository. This
+section documents the questions and gives a few light details, but the
+reader is referred to the issues for further discussion.</p>
+<p><strong>Single-field structs (<a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/34">#34</a>).</strong> If you have a struct with single field
+(<code>struct Foo { x: T }</code>), should we guarantee that the memory layout of
+<code>Foo</code> is identical to the memory layout of <code>T</code> (note that ABI details
+around function calls may still draw a distinction, which is why
+<code>#[repr(transparent)]</code> is needed). What about zero-sized types like
+<code>PhantomData</code>?</p>
+<p><strong>Homogeneous structs (<a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/36">#36</a>).</strong> If you have homogeneous structs, where all
+the <code>N</code> fields are of a single type <code>T</code>, can we guarantee a mapping to
+the memory layout of <code>[T; N]</code>? How do we map between the field names
+and the indices? What about zero-sized types?</p>
+<p><strong>Deterministic layout (<a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/35">#35</a>).</strong> Can we say that layout is some deterministic
+function of a certain, fixed set of inputs? This would allow you to be
+sure that if you do not alter those inputs, your struct layout would
+not change, even if it meant that you can't predict precisely what it
+will be. For example, we might say that struct layout is a function of
+the struct's generic types and its substitutions, full stop -- this
+would imply that any two structs with the same definition are laid out
+the same. This might interfere with our ability to do profile-guided
+layout or to analyze how a struct is used and optimize based on
+that. Some would call that a feature.</p>
+<h3><a class="header" href="#c-compatible-layout-repr-c" id="c-compatible-layout-repr-c">C-compatible layout (&quot;repr C&quot;)</a></h3>
+<p>For structs tagged <code>#[repr(C)]</code>, the compiler will apply a C-like
+layout scheme. See section 6.7.2.1 of the <a href="http://www.open-std.org/jtc1/sc22/wg14/www/abq/c17_updated_proposed_fdis.pdf">C17 specification</a> for
+a detailed write-up of what such rules entail (as well as the relevant
+specs for your platform). For most platforms, however, this means the
+following:</p>
+<ul>
+<li>
+<p>Field order is preserved.</p>
+</li>
+<li>
+<p>The first field begins at offset 0.</p>
+</li>
+<li>
+<p>Assuming the struct is not packed, each field's offset is aligned<sup class="footnote-reference"><a href="#aligned">1</a></sup> to
+the ABI-mandated alignment for that field's type, possibly creating
+unused padding bits.</p>
+</li>
+<li>
+<p>The total size of the struct is rounded up to its overall alignment.</p>
+</li>
+<div class="footnote-definition" id="aligned"><sup class="footnote-definition-label">1</sup>
+<p>Aligning an offset O to an alignment A means to round up the offset O until it is a multiple of the alignment A.</p>
+</div>
+</ul>
+<p>The intention is that if one has a set of C struct declarations and a
+corresponding set of Rust struct declarations, all of which are tagged
+with <code>#[repr(C)]</code>, then the layout of those structs will all be
+identical. Note that this setup implies that none of the structs in
+question can contain any <code>#[repr(Rust)]</code> structs (or Rust tuples), as
+those would have no corresponding C struct declaration -- as
+<code>#[repr(Rust)]</code> types have undefined layout, you cannot safely declare
+their layout in a C program.</p>
+<p>See also the notes on <a href="#fnabi">ABI compatibility</a> under the section on <code>#[repr(transparent)]</code>.</p>
+<p><strong>Structs with no fields.</strong> One area where Rust layout can deviate
+from C/C++ -- even with <code>#[repr(C)]</code> -- comes about with &quot;empty
+structs&quot; that have no fields. In C, an empty struct declaration like
+<code>struct Foo { }</code> is illegal. However, both gcc and clang support
+options to enable such structs, and <a href="https://godbolt.org/z/AS2gdC">assign them size
+zero</a>. Rust behaves the same way --
+empty structs have size 0 and alignment 1 (unless an explicit
+<code>#[repr(align)]</code> is present). C++, in contrast, gives empty structs a
+size of 1, unless they are inherited from or they are fields that have
+the <code>[[no_unique_address]]</code> attribute, in which case they do not
+increase the overall size of the struct.</p>
+<p><strong>Structs of zero-size.</strong> It is also possible to have structs that
+have fields but still have zero size. In this case, the size of the
+struct would be zero, but its alignment may be greater. For example,
+<code>#[repr(C)] struct Foo { x: [u16; 0] }</code> would have an alignment of 2
+bytes by default. (<a href="https://godbolt.org/z/5w0gkq">This matches the behavior in gcc and
+clang</a>.)</p>
+<p><strong>Structs with fields of zero-size.</strong> If a <code>#[repr(C)]</code> struct
+containing a field of zero-size, that field does not occupy space in
+the struct; it can affect the offsets of subsequent fields if it
+induces padding due to the alignment on its type. (<a href="https://godbolt.org/z/5w0gkq">This matches the
+behavior in gcc and clang</a>.)</p>
+<p><strong>C++ compatibility hazard.</strong> As noted above when discussing structs
+with no fields, C++ treats empty structs like <code>struct Foo { }</code>
+differently from C and Rust. This can introduce subtle compatibility
+hazards. If you have an empty struct in your C++ code and you make the
+&quot;naive&quot; translation into Rust, even tagging with <code>#[repr(C)]</code> will not
+produce layout- or ABI-compatible results.</p>
+<h3><a class="header" href="#fixed-alignment" id="fixed-alignment">Fixed alignment</a></h3>
+<p>The <code>#[repr(align(N))]</code> attribute may be used to raise the alignment
+of a struct, as described in <a href="https://doc.rust-lang.org/stable/reference/type-layout.html#the-align-representation">The Rust Reference</a>.</p>
+<h3><a class="header" href="#packed-layout" id="packed-layout">Packed layout</a></h3>
+<p>The <code>#[repr(packed(N))]</code> attribute may be used to impose a maximum
+limit on the alignments for individual fields. It is most commonly
+used with an alignment of 1, which makes the struct as small as
+possible. For example, in a <code>#[repr(packed(2))]</code> struct, a <code>u8</code> or
+<code>u16</code> would be aligned at 1- or 2-bytes respectively (as normal), but
+a <code>u32</code> would be aligned at only 2 bytes instead of 4. In the absence
+of an explicit <code>#[repr(align)]</code> directive, <code>#[repr(packed(N))]</code> also
+sets the alignment for the struct as a whole to N bytes.</p>
+<p>The resulting fields may not fall at properly aligned boundaries in
+memory. This makes it unsafe to create a Rust reference (<code>&amp;T</code> or <code>&amp;mut T</code>) to those fields, as the compiler requires that all reference
+values must always be aligned (so that it can use more efficient
+load/store instructions at runtime). See the <a href="https://doc.rust-lang.org/stable/reference/type-layout.html#the-packed-representation">Rust reference for more
+details</a>.</p>
+<p><a name="fnabi"> </a></p>
+<h3><a class="header" href="#function-call-abi-compatibility" id="function-call-abi-compatibility">Function call ABI compatibility</a></h3>
+<p>In general, when invoking functions that use the C ABI, <code>#[repr(C)]</code>
+structs are guaranteed to be passed in the same way as their
+corresponding C counterpart (presuming one exists). <code>#[repr(Rust)]</code>
+structs have no such guarantee. This means that if you have an <code>extern &quot;C&quot;</code> function, you cannot pass a <code>#[repr(Rust)]</code> struct as one of its
+arguments. Instead, one would typically pass <code>#[repr(C)]</code> structs (or
+possibly pointers to Rust-structs, if those structs are opaque on the
+other side, or the callee is defined in Rust).</p>
+<p>However, there is a subtle point about C ABIs: in some C ABIs, passing
+a struct with one field of type <code>T</code> as an argument is <strong>not</strong>
+equivalent to just passing a value of type <code>T</code>. So e.g. if you have a
+C function that is defined to take a <code>uint32_t</code>:</p>
+<pre><code class="language-C">void some_function(uint32_t value) { .. }
+</code></pre>
+<p>It is <strong>incorrect</strong> to pass in a struct as that value, even if that
+struct is <code>#[repr(C)</code>] and has only one field:</p>
+<pre><code class="language-rust ignore">#[repr(C)]
+struct Foo { x: u32 }
+
+extern &quot;C&quot; some_function(Foo);
+
+some_function(Foo { x: 22 }); // Bad!
+</code></pre>
+<p>Instead, you should declare the struct with <code>#[repr(transparent)]</code>,
+which specifies that <code>Foo</code> should use the ABI rules for its field
+type, <code>u32</code>. This is useful when using &quot;wrapper structs&quot; in Rust to
+give stronger typing guarantees.</p>
+<p><code>#[repr(transparent)]</code> can only be applied to structs with a single
+field whose type <code>T</code> has non-zero size, along with some number of
+other fields whose types are all zero-sized (typically
+<code>std::marker::PhantomData</code> fields). The struct then takes on the &quot;ABI
+behavior&quot; of the type <code>T</code> that has non-zero size.</p>
+<p>(Note further that the Rust ABI is undefined and theoretically may
+vary from compiler revision to compiler revision.)</p>
+<h2><a class="header" href="#unresolved-question-guaranteeing-compatible-layouts" id="unresolved-question-guaranteeing-compatible-layouts">Unresolved question: Guaranteeing compatible layouts?</a></h2>
+<p>One key unresolved question was whether we would want to guarantee
+that two <code>#[repr(Rust)]</code> structs whose fields have the same types are
+laid out in a &quot;compatible&quot; way, such that one could be transmuted to
+the other. @rkruppe laid out a <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/11#issuecomment-419956939">number of
+examples</a>
+where this might be a reasonable thing to expect. As currently
+written, and in an effort to be conservative, we make no such
+guarantee, though we do not firmly rule out doing such a thing in the future.</p>
+<p>It seems like it may well be desirable to -- at minimum -- guarantee
+that <code>#[repr(Rust)]</code> layout is &quot;some deterministic function of the
+struct declaration and the monomorphized types of its fields&quot;.  Note
+that it is not sufficient to consider the monomorphized type of a
+struct's fields: due to unsizing coercions, it matters whether the
+struct is declared in a generic way or not, since the &quot;unsized&quot; field
+must presently be <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/12#issuecomment-417843595">laid out last in the
+structure</a>. (Note
+that tuples are always coercible (see <a href="https://github.com/rust-lang/rust/issues/42877">#42877</a> for more information),
+and are always declared as generics.) This implies that our
+&quot;deterministic function&quot; also takes as input the form in which the
+fields are declared in the struct.</p>
+<p>However, that rule is not true today. For example, the compiler
+includes an option (called &quot;optimization fuel&quot;) that will enable us to
+alter the layout of only the &quot;first N&quot; structs declared in the
+source. When one is accidentally relying on the layout of a structure,
+this can be used to track down the struct that is causing the problem.</p>
+<p>There are also benefits to having fewer guarantees. For example:</p>
+<ul>
+<li>Code hardening tools can be used to randomize the layout of individual structs.</li>
+<li>Profile-guided optimization might analyze how instances of a
+particular struct are used and tweak the layout (e.g., to insert
+padding and reduce false sharing).
+<ul>
+<li>However, there aren't many tools that do this sort of thing
+(<a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/11#issuecomment-420650851">1</a>,
+<a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/11#issuecomment-420681763">2</a>). Moreover,
+it would probably be better for the tools to merely recommend
+annotations that could be added
+(<a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/11#issuecomment-420077105">1</a>,
+<a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/11#issuecomment-420077105">2</a>),
+such that the knowledge of the improved layouts can be recorded in the
+source.</li>
+</ul>
+</li>
+</ul>
+<p>As a more declarative alternative, @alercah <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/12#issuecomment-420165155">proposed a possible
+extension</a>
+that would permit one to declare that the layout of two structs or
+types are compatible (e.g., <code>#[repr(as(Foo))] struct Bar { .. }</code>),
+thus permitting safe transmutes (and also ABI compatibility).  One
+might also use some weaker form of <code>#[repr(C)]</code> to specify a &quot;more
+deterministic&quot; layout. These areas need future exploration.</p>
+<h2><a class="header" href="#counteropinions-and-other-notes" id="counteropinions-and-other-notes">Counteropinions and other notes</a></h2>
+<p>@joshtripplet <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/11#issuecomment-417953576">argued against reordering struct
+fields</a>,
+suggesting instead it would be better if users reordering fields
+themselves. However, there are a number of downsides to such a
+proposal (and -- further -- it does not match our existing behavior):</p>
+<ul>
+<li>In a generic struct, the <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/11#issuecomment-420659840">best ordering of fields may not be known
+ahead of
+time</a>,
+so the user cannot do it manually.</li>
+<li>If layout is defined, and a library exposes a struct with all public
+fields, then clients may be more likely to assume that the layout of
+that struct is stable. If they were to write unsafe code that relied
+on this assumption, that would break if fields were reordered. But
+libraries may well expect the freedom to reorder fields. This case
+is weakened because of the requirement to write unsafe code (after
+all, one can always write unsafe code that relies on virtually any
+implementation detail); if we were to permit <strong>safe</strong> casts that
+rely on the layout, then reordering fields would clearly be a
+breaking change (see also <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/11#issuecomment-420117856">this
+comment</a>
+and <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/pull/31#discussion_r224955817">this
+thread</a>).</li>
+<li>Many people would prefer the name ordering to be chosen for
+&quot;readability&quot; and not optimal layout.</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../layout.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../layout/scalars.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="../layout.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="../layout/scalars.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

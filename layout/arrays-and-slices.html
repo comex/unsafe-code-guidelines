@@ -1,0 +1,273 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Arrays and Slices - Unsafe Code Guidelines Reference</title>
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li><a href="../introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><a href="../glossary.html"><strong aria-hidden="true">2.</strong> Glossary</a></li><li><a href="../layout.html"><strong aria-hidden="true">3.</strong> Data layout</a></li><li><ol class="section"><li><a href="../layout/structs-and-tuples.html"><strong aria-hidden="true">3.1.</strong> Structs and tuples</a></li><li><a href="../layout/scalars.html"><strong aria-hidden="true">3.2.</strong> Scalars</a></li><li><a href="../layout/enums.html"><strong aria-hidden="true">3.3.</strong> Enums</a></li><li><a href="../layout/unions.html"><strong aria-hidden="true">3.4.</strong> Unions</a></li><li><a href="../layout/pointers.html"><strong aria-hidden="true">3.5.</strong> Pointers</a></li><li><a href="../layout/function-pointers.html"><strong aria-hidden="true">3.6.</strong> Function pointers</a></li><li><a href="../layout/arrays-and-slices.html" class="active"><strong aria-hidden="true">3.7.</strong> Arrays and Slices</a></li><li><a href="../layout/packed-simd-vectors.html"><strong aria-hidden="true">3.8.</strong> Packed SIMD vectors</a></li></ol></li><li><a href="../validity.html"><strong aria-hidden="true">4.</strong> Validity</a></li><li><ol class="section"><li><a href="../validity/unions.html"><strong aria-hidden="true">4.1.</strong> Unions</a></li></ol></li><li><a href="../optimizations.html"><strong aria-hidden="true">5.</strong> Optimizations</a></li><li><ol class="section"><li><a href="../optimizations/return_value_optimization.html"><strong aria-hidden="true">5.1.</strong> Return value optimization</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Unsafe Code Guidelines Reference</h1>
+
+                        <div class="right-buttons">
+                            <a href="../print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#layout-of-rust-array-types-and-slices" id="layout-of-rust-array-types-and-slices">Layout of Rust array types and slices</a></h1>
+<h2><a class="header" href="#layout-of-rust-array-types" id="layout-of-rust-array-types">Layout of Rust array types</a></h2>
+<p>Array types, <code>[T; N]</code>, store <code>N</code> values of type <code>T</code> with a constant <em>stride</em>.
+Here, <em>stride</em> is the distance between each pair of consecutive values within
+the array.</p>
+<p>The <em>offset</em> of the first array element is <code>0</code>, that is, a pointer to the array
+and a pointer to its first element both point to the same memory address.</p>
+<p>The <em>alignment</em> of array types is greater or equal to the alignment of its
+element type. If the element type is <code>repr(C)</code> the layout of the array is
+guaranteed to be the same as the layout of a C array with the same element type.</p>
+<blockquote>
+<p><strong>Note</strong>: the type of array arguments in C function signatures, e.g., <code>void foo(T x[N])</code>, decays to a pointer. That is, these functions do not take arrays
+as an arguments, they take a pointer to the first element of the array
+instead. Array types are therefore <em>improper C types</em> (not C FFI safe) in Rust
+foreign function declarations, e.g., <code>extern { fn foo(x: [T; N]) -&gt; [U; M]; }</code>. Pointers to arrays are fine: <code>extern { fn foo(x: *const [T; N]) -&gt; *const [U; M]; }</code>, and <code>struct</code>s and <code>union</code>s containing arrays are also fine.</p>
+</blockquote>
+<p>The <em>stride</em> of the array is constant for all element pairs and it is computed
+as the <em>size</em> of the element type rounded up to the next multiple of the
+<em>alignment</em> of the element type.</p>
+<h3><a class="header" href="#arrays-of-zero-size" id="arrays-of-zero-size">Arrays of zero-size</a></h3>
+<p>Arrays <code>[T; N]</code> have zero size if and only if their count <code>N</code> is zero or their
+element type <code>T</code> is zero-sized.</p>
+<h3><a class="header" href="#special-case-stride--size" id="special-case-stride--size">Special case <code>stride == size</code></a></h3>
+<p>When the element <em>size</em> is a multiple of the element's <em>alignment</em>, then <code>stride == size</code>, and the elements are laid out contiguously in memory, e.g., <code>[u8; 4]</code>.
+In this case, the <em>size</em> of the array can be computed as <code>size_of::&lt;T&gt;() * N</code>,
+and a pointer to the <code>i</code>-th element of the array can be obtained by offsetting a
+pointer to the first element of the array by <code>i</code><sup class="footnote-reference"><a href="#1">1</a></sup>.</p>
+<blockquote>
+<p><strong>Note:</strong> In the current Rust implementation, <em>size</em> is always a multiple of
+the element's <em>alignment</em>, and therefore <code>stride == size</code> always holds. This
+is, however, not guaranteed by the <a href="./structs-and-tuples.html">layout of structs and tuples</a>.</p>
+</blockquote>
+<div class="footnote-definition" id="1"><sup class="footnote-definition-label">1</sup>
+<p>When <code>stride &gt; size</code> the pointer needs to be advanced by the array
+<em>stride</em> instead of by the element <em>size</em>.</p>
+</div>
+<h3><a class="header" href="#layout-compatibility-with-packed-simd-vectors" id="layout-compatibility-with-packed-simd-vectors">Layout compatibility with packed SIMD vectors</a></h3>
+<p>The <a href="packed-simd-vectors.html">layout of packed SIMD vector types</a> <sup class="footnote-reference"><a href="#2">2</a></sup> requires the <em>size</em> and
+<em>alignment</em> of the vector elements to match. That is, types with <a href="packed-simd-vectors.html">packed SIMD
+vector</a> layout are layout compatible with arrays having the same element
+type and the same number of elements as the vector.</p>
+<div class="footnote-definition" id="2"><sup class="footnote-definition-label">2</sup>
+<p>The <a href="packed-simd-vectors.html">packed SIMD vector</a> layout is the layout of <code>repr(simd)</code> types like <a href="https://doc.rust-lang.org/core/arch/x86_64/struct.__m128.html"><code>__m128</code></a>.</p>
+</div>
+<h2><a class="header" href="#layout-of-rust-slices" id="layout-of-rust-slices">Layout of Rust slices</a></h2>
+<p>The layout of a slice <code>[T]</code> of length <code>N</code> is the same as that of a <code>[T; N]</code> array. </p>
+<h2><a class="header" href="#unresolved-questions" id="unresolved-questions">Unresolved questions</a></h2>
+<h3><a class="header" href="#guaranteeing-stride--size-" id="guaranteeing-stride--size-">Guaranteeing <code>stride == size</code> ?</a></h3>
+<p>Currently, the <a href="./structs-and-tuples.html">layout of structs and tuples</a> does not guarantee that the
+element <em>size</em> is a multiple of its <em>alignment</em>. For example, consider:</p>
+<pre><code class="language-rust ignore">struct A(u16, u8);
+type B = [A; 4];
+</code></pre>
+<p>In the current Rust implementation, <code>A</code> has an alignment and a size of <code>4</code>, and
+<code>B</code> has a size of <code>16</code>, such that <code>B</code> contains four <code>A</code>s that are contiguously
+laid in memory. </p>
+<p>However, a future Rust implementation could implement a layout optimization that
+reduces the size of <code>A</code> to <code>3</code>. For the elements of <code>B</code> to be properly aligned,
+<code>B</code> would need to choose a <code>stride == 4</code>, resulting in a <code>stride &gt; size</code>.</p>
+<p>Guaranteeing <code>stride &gt;= size</code> is forward-compatible with such
+layout-optimization proposals:</p>
+<ul>
+<li><a href="https://github.com/rust-lang/rfcs/issues/1397">rust-lang/rfcs/1397: Spearate size and stride for types</a></li>
+<li><a href="https://github.com/rust-lang/rust/issues/17027">rust-lang/rust/17027: Collapse trailing padding</a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../layout/function-pointers.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../layout/packed-simd-vectors.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="../layout/function-pointers.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="../layout/packed-simd-vectors.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

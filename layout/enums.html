@@ -1,0 +1,613 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Enums - Unsafe Code Guidelines Reference</title>
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li><a href="../introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><a href="../glossary.html"><strong aria-hidden="true">2.</strong> Glossary</a></li><li><a href="../layout.html"><strong aria-hidden="true">3.</strong> Data layout</a></li><li><ol class="section"><li><a href="../layout/structs-and-tuples.html"><strong aria-hidden="true">3.1.</strong> Structs and tuples</a></li><li><a href="../layout/scalars.html"><strong aria-hidden="true">3.2.</strong> Scalars</a></li><li><a href="../layout/enums.html" class="active"><strong aria-hidden="true">3.3.</strong> Enums</a></li><li><a href="../layout/unions.html"><strong aria-hidden="true">3.4.</strong> Unions</a></li><li><a href="../layout/pointers.html"><strong aria-hidden="true">3.5.</strong> Pointers</a></li><li><a href="../layout/function-pointers.html"><strong aria-hidden="true">3.6.</strong> Function pointers</a></li><li><a href="../layout/arrays-and-slices.html"><strong aria-hidden="true">3.7.</strong> Arrays and Slices</a></li><li><a href="../layout/packed-simd-vectors.html"><strong aria-hidden="true">3.8.</strong> Packed SIMD vectors</a></li></ol></li><li><a href="../validity.html"><strong aria-hidden="true">4.</strong> Validity</a></li><li><ol class="section"><li><a href="../validity/unions.html"><strong aria-hidden="true">4.1.</strong> Unions</a></li></ol></li><li><a href="../optimizations.html"><strong aria-hidden="true">5.</strong> Optimizations</a></li><li><ol class="section"><li><a href="../optimizations/return_value_optimization.html"><strong aria-hidden="true">5.1.</strong> Return value optimization</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Unsafe Code Guidelines Reference</h1>
+
+                        <div class="right-buttons">
+                            <a href="../print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#layout-of-rust-enum-types" id="layout-of-rust-enum-types">Layout of Rust <code>enum</code> types</a></h1>
+<p><strong>Disclaimer:</strong> Some parts of this section were decided in RFCs, but
+others represent the consensus from issue <a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/10">#10</a>. The text will attempt
+to clarify which parts are &quot;guaranteed&quot; (owing to the RFC decision)
+and which parts are still in a &quot;preliminary&quot; state, at least until we
+start to open RFCs ratifying parts of the Unsafe Code Guidelines
+effort.</p>
+<h2><a class="header" href="#categories-of-enums" id="categories-of-enums">Categories of enums</a></h2>
+<p><strong>Empty enums.</strong> Enums with no variants can never be instantiated and
+are equivalent to the <code>!</code> type. They do not accept any <code>#[repr]</code>
+annotations.</p>
+<p><strong>Fieldless enums.</strong> The simplest form of enum is one where none of
+the variants have any fields:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+enum SomeEnum {
+  Variant1,
+  Variant2,
+  Variant3,
+}
+#}</code></pre></pre>
+<p>Such enums correspond quite closely with enums in the C language
+(though there are important differences as well). Presuming that they
+have more than one variant, these sorts of enums are always
+represented as a simple integer, though the size will vary.</p>
+<p>Fieldless enums may also specify the value of their discriminants
+explicitly:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+enum SomeEnum {
+  Variant22 = 22,
+  Variant44 = 44,
+  Variant45,
+}
+#}</code></pre></pre>
+<p>As in C, discriminant values that are not specified are defined as
+either 0 (for the first variant) or as one more than the prior
+variant.</p>
+<p><strong>Data-carrying enums.</strong> Enums whose variants have fields are called
+&quot;data-carrying&quot; enums. Note that for the purposes of this definition,
+it is not relevant whether those fields are zero-sized. Therefore this
+enum is considered &quot;data-carrying&quot;:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+enum Foo {
+  Bar(()),
+  Baz,
+}
+#}</code></pre></pre>
+<h2><a class="header" href="#repr-annotations-accepted-on-enums" id="repr-annotations-accepted-on-enums">repr annotations accepted on enums</a></h2>
+<p>In general, enums may be annotated using the following <code>#[repr]</code> tags:</p>
+<ul>
+<li>A specific integer type (called <code>Int</code> as a shorthand below):
+<ul>
+<li><code>#[repr(u8)]</code></li>
+<li><code>#[repr(u16)]</code></li>
+<li><code>#[repr(u32)]</code></li>
+<li><code>#[repr(u64)]</code></li>
+<li><code>#[repr(i8)]</code></li>
+<li><code>#[repr(i16)]</code></li>
+<li><code>#[repr(i32)]</code></li>
+<li><code>#[repr(i64)]</code></li>
+</ul>
+</li>
+<li>C-compatible layout:
+<ul>
+<li><code>#[repr(C)]</code></li>
+</ul>
+</li>
+<li>C-compatible layout with a specified discriminant size:
+<ul>
+<li><code>#[repr(C, u8)]</code></li>
+<li><code>#[repr(C, u16)]</code></li>
+<li>etc</li>
+</ul>
+</li>
+</ul>
+<p>Note that manually specifying the alignment using <code>#[repr(align)]</code> is
+not permitted on an enum.</p>
+<p>The set of repr annotations accepted by an enum depends on its category,
+as defined above:</p>
+<ul>
+<li>Empty enums: no repr annotations are permitted.</li>
+<li>Fieldless enums: <code>#[repr(Int)]</code>-style and <code>#[repr(C)]</code> annotations are permitted, but <code>#[repr(C, Int)]</code> annotations are not.</li>
+<li>Data-carrying enums: all repr annotations are permitted.</li>
+</ul>
+<h2><a class="header" href="#enum-layout-rules" id="enum-layout-rules">Enum layout rules</a></h2>
+<p>The rules for enum layout vary depending on the category.</p>
+<h3><a class="header" href="#layout-of-an-empty-enum" id="layout-of-an-empty-enum">Layout of an empty enum</a></h3>
+<p>An <strong>empty enum</strong> is an enum with no variants; empty enums can never
+be instantiated and are logically equivalent to the &quot;never type&quot;
+<code>!</code>. <code>#[repr]</code> annotations are not accepted on empty enums. Empty
+enums are guaranteed to have the same layout as <code>!</code> (zero size and
+alignment 1).</p>
+<h3><a class="header" href="#layout-of-a-fieldless-enum" id="layout-of-a-fieldless-enum">Layout of a fieldless enum</a></h3>
+<p>If there is no <code>#[repr]</code> attached to a fieldless enum, the compiler
+will represent it using an integer of sufficient size to store the
+discriminants for all possible variants -- note that if there is only
+one variant, then 0 bits are required, so it is possible that the enum
+may have zero size. In the absence of a <code>#[repr]</code> annotation, the
+number of bits used by the compiler are not defined and are subject to
+change.</p>
+<p>When a <code>#[repr(Int)]</code>-style annotation is attached to a fieldless enum
+(one without any data for its variants), it will cause the enum to be
+represented as a simple integer of the specified size <code>Int</code>. This must
+be sufficient to store all the required discriminant values.</p>
+<p>The <code>#[repr(C)]</code> annotation is equivalent, but it selects the same
+size as the C compiler would use for the given target for an
+equivalent C-enum declaration.</p>
+<p>Combining a <code>C</code> and <code>Int</code> <code>repr</code> (e.g., <code>#[repr(C, u8)]</code>) is
+not permitted on a fieldless enum.</p>
+<p>The values used for the discriminant will match up with what is
+specified (or automatically assigned) in the enum definition. For
+example, the following enum defines the discriminants for its variants
+as 22 and 23 respectively:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+enum Foo { 
+  // Specificy discriminant of this variant as 22:
+  Variant22 = 22,
+  
+  // Default discriminant is one more than the previous,
+  // so 23 will be assigned.
+  Variant23
+}
+#}</code></pre></pre>
+<p><strong>Note:</strong> some C compilers offer flags (e.g., <code>-fshort-enums</code>) that
+change the layout of enums from the default settings that are standard
+for the platform. The integer size selected by <code>#[repr(C)]</code> is defined
+to match the <strong>default</strong> settings for a given target, when no such
+flags are supplied. If interop with code that uses other flags is
+desired, then one should either specify the sizes of enums manually or
+else use an alternate target definition that is tailored to the
+compiler flags in use.</p>
+<h3><a class="header" href="#layout-of-a-data-carrying-enums-with-an-explicit-repr-annotation" id="layout-of-a-data-carrying-enums-with-an-explicit-repr-annotation">Layout of a data-carrying enums with an explicit repr annotation</a></h3>
+<p>This section concerns data-carrying enums <strong>with an explicit repr
+annotation of some form</strong>. The memory layout of such cases was
+specified in <a href="https://rust-lang.github.io/rfcs/2195-really-tagged-unions.html">RFC 2195</a> and is therefore normative.</p>
+<p>The layout of data-carrying enums that do <strong>not</strong> have an explicit
+repr annotation is generally undefined, but with certain specific
+exceptions: see the next section for details.</p>
+<h4><a class="header" href="#explicit-repr-annotation-without-c-compatibility" id="explicit-repr-annotation-without-c-compatibility">Explicit repr annotation without C compatibility</a></h4>
+<p>When an enum is tagged with <code>#[repr(Int)]</code> for some integral type
+<code>Int</code> (e.g., <code>#[repr(u8)]</code>), it will be represented as a C-union of a
+series of <code>#[repr(C)]</code> structs, one per variant. Each of these structs
+begins with an integral field containing the <strong>discriminant</strong>, which
+specifies which variant is active. They then contain the remaining
+fields associated with that variant.</p>
+<p><strong>Example.</strong> The following enum uses an <code>repr(u8)</code> annotation:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[repr(u8)]
+enum TwoCases {
+    A(u8, u16),
+    B(u16),
+}
+#}</code></pre></pre>
+<p>This will be laid out equivalently to the following more 
+complex Rust types:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[repr(C)]
+union TwoCasesRepr {
+    A: TwoCasesVariantA,
+    B: TwoCasesVariantB,
+}
+        
+# #[derive(Copy, Clone)]        
+#[repr(u8)]
+enum TwoCasesTag { A, B }
+
+# #[derive(Copy, Clone)]
+#[repr(C)]
+struct TwoCasesVariantA(TwoCasesTag, u8, u16);
+
+# #[derive(Copy, Clone)]
+#[repr(C)]
+struct TwoCasesVariantB(TwoCasesTag, u16);
+#}</code></pre></pre>
+<p>Note that the <code>TwoCasesVariantA</code> and <code>TwoCasesVariantB</code> structs are
+<code>#[repr(C)]</code>; this is needed to ensure that the <code>TwoCasesTag</code> value
+appears at offset 0 in both cases, so that we can read it to determine
+the current variant.</p>
+<h4><a class="header" href="#explicit-repr-annotation-with-c-compatibility" id="explicit-repr-annotation-with-c-compatibility">Explicit repr annotation with C compatibility</a></h4>
+<p>When the <code>#[repr]</code> tag includes <code>C</code>, e.g., <code>#[repr(C)]</code> or <code>#[repr(C, u8)]</code>, the layout of enums is changed to better match C++ enums. In
+this mode, the data is laid out as a tuple of <code>(discriminant, union)</code>,
+where <code>union</code> represents a C union of all the possible variants. The
+type of the discriminant will be the integral type specified (<code>u8</code>,
+etc) -- if no type is specified, then the compiler will select one
+based on what a size a fieldless enum would have with the same number of
+variants.</p>
+<p>This layout, while more compatible and arguably more obvious, is also
+less efficient than the non-C compatible layout in some cases in terms
+of total size. For example, the <code>TwoCases</code> example given in the
+preivous section only occupies 4 bytes with <code>#[repr(u8)]</code>, but would
+occupy 6 bytes with <code>#[repr(C, u8)]</code>, as more padding is required.</p>
+<p><strong>Example.</strong> The following enum:</p>
+<pre><code class="language-rust ignore">#[repr(C, Int)]
+enum MyEnum {
+    A(u32),
+    B(f32, u64),
+    C { x: u32, y: u8 },
+    D,
+}
+</code></pre>
+<p>is equivalent to the following Rust definition:</p>
+<pre><code class="language-rust ignore">#[repr(C)]
+struct MyEnumRepr {
+    tag: MyEnumTag,
+    payload: MyEnumPayload,
+}
+
+#[repr(Int)]
+enum MyEnumTag { A, B, C, D }
+
+#[repr(C)]
+union MyEnumPayload {
+   A: u32,
+   B: MyEnumPayloadB,
+   C: MyEnumPayloadC,
+   D: (),
+}
+
+#[repr(C)]
+struct MyEnumPayloadB(f32, u64);
+
+#[repr(C)]
+struct MyEnumPayloadC { x: u32, y: u8 }
+</code></pre>
+<p>This enum can also be represented in C++ as follows:</p>
+<pre><code class="language-c++">#include &lt;stdint.h&gt;
+
+enum class MyEnumTag: CppEquivalentOfInt { A, B, C, D };
+struct MyEnumPayloadB { float _0; uint64_t _1;  };
+struct MyEnumPayloadC { uint32_t x; uint8_t y; };
+
+union MyEnumPayload {
+   uint32_t A;
+   MyEnumPayloadB B;
+   MyEnumPayloadC C;
+};
+
+struct MyEnum {
+    MyEnumTag tag;
+    MyEnumPayload payload;
+};
+</code></pre>
+<h3><a class="header" href="#layout-of-a-data-carrying-enums-without-a-repr-annotation" id="layout-of-a-data-carrying-enums-without-a-repr-annotation">Layout of a data-carrying enums without a repr annotation</a></h3>
+<p>If no explicit <code>#[repr]</code> attribute is used, then the layout of a
+data-carrying enum is typically <strong>not specified</strong>. However, in certain
+select cases, there are <strong>guaranteed layout optimizations</strong> that may
+apply, as described below.</p>
+<h4><a class="header" href="#discriminant-elision-on-option-like-enums" id="discriminant-elision-on-option-like-enums">Discriminant elision on Option-like enums</a></h4>
+<p>(Meta-note: The content in this section is not fully described by any RFC and is
+therefore &quot;non-normative&quot;. Parts of it were specified in
+<a href="https://github.com/rust-lang/rust/pull/60300">rust-lang/rust#60300</a>).</p>
+<p><strong>Definition.</strong> An <strong>option-like enum</strong> is a 2-variant <code>enum</code> where:</p>
+<ul>
+<li>the <code>enum</code> has no explicit <code>#[repr(...)]</code>, and</li>
+<li>one variant has a single field, and</li>
+<li>the other variant has no fields (the &quot;unit variant&quot;).</li>
+</ul>
+<p>The simplest example is <code>Option&lt;T&gt;</code> itself, where the <code>Some</code> variant
+has a single field (of type <code>T</code>), and the <code>None</code> variant has no
+fields. But other enums that fit that same template fit.</p>
+<p><strong>Definition.</strong> The <strong>payload</strong> of an option-like enum is the single
+field which it contains; in the case of <code>Option&lt;T&gt;</code>, the payload has
+type <code>T</code>.</p>
+<p><strong>Definition.</strong> In some cases, the payload type may contain illegal
+values, which are called <strong><a href="../glossary.html#niche">niches</a></strong>. For example, a value of type <code>&amp;T</code>
+may never be <code>NULL</code>, and hence defines a <a href="../glossary.html#niche">niche</a> consisting of the
+bitstring <code>0</code>.  Similarly, the standard library types <a href="https://doc.rust-lang.org/std/num/struct.NonZeroU8.html"><code>NonZeroU8</code></a>
+and friends may never be zero, and hence also define the value of <code>0</code>
+as a <a href="../glossary.html#niche">niche</a>. </p>
+<p>The <a href="../glossary.html#niche">niche</a> values must be disjoint from the values allowed by the validity
+invariant. The validity invariant is, as of this writing, the current active
+discussion topic in the unsafe code guidelines process. <a href="https://github.com/rust-lang/rust/pull/60300">rust-lang/rust#60300</a>
+specifies that the following types have at least one <a href="../glossary.html#niche">niche</a> (the all-zeros
+bit-pattern):</p>
+<ul>
+<li><code>&amp;T</code></li>
+<li><code>&amp;mut T</code></li>
+<li><code>extern &quot;C&quot; fn</code></li>
+<li><code>core::num::NonZero*</code></li>
+<li><code>core::ptr::NonNull&lt;T&gt;</code></li>
+<li><code>#[repr(transparent)] struct</code> around one of the types in this list.</li>
+</ul>
+<p><strong>Option-like enums where the payload defines at least one <a href="../glossary.html#niche">niche</a> value
+are guaranteed to be represented using the same memory layout as their
+payload.</strong> This is called <strong>discriminant elision</strong>, as there is no
+explicit discriminant value stored anywhere. Instead, <a href="../glossary.html#niche">niche</a> values are
+used to represent the unit variant.</p>
+<p>The most common example is that <code>Option&lt;&amp;u8&gt;</code> can be represented as an
+nullable <code>&amp;u8</code> reference -- the <code>None</code> variant is then represented
+using the <a href="../glossary.html#niche">niche</a> value zero. This is because a valid <code>&amp;u8</code> value can
+never be zero, so if we see a zero value, we know that this must be
+<code>None</code> variant.</p>
+<p><strong>Example.</strong> The type <code>Option&lt;&amp;u32&gt;</code> will be represented at runtime as
+a nullable pointer. FFI interop often depends on this property.</p>
+<p><strong>Example.</strong> As <code>fn</code> types are non-nullable, the type <code>Option&lt;extern &quot;C&quot; fn()&gt;</code> will be represented at runtime as a nullable function
+pointer (which is therefore equivalent to a C function pointer) . FFI
+interop often depends on this property.</p>
+<p><strong>Example.</strong> The following enum definition is <strong>not</strong> option-like,
+as it has two unit variants:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+enum Enum1&lt;T&gt; {
+  Present(T),
+  Absent1,
+  Absent2,
+}
+#}</code></pre></pre>
+<p><strong>Example.</strong> The following enum definition is <strong>not</strong> option-like,
+as it has an explicit <code>repr</code> attribute.</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[repr(u8)]
+enum Enum2&lt;T&gt; {
+  Present(T),
+  Absent1,
+}
+#}</code></pre></pre>
+<h2><a class="header" href="#unresolved-questions" id="unresolved-questions">Unresolved questions</a></h2>
+<h3><a class="header" href="#layout-of-single-variant-enums" id="layout-of-single-variant-enums">Layout of single variant enums</a></h3>
+<p><a href="https://github.com/rust-rfcs/unsafe-code-guidelines/issues/79">Issue #79.</a></p>
+<p>Enums that contain a <strong>single variant</strong> and which do not have an
+explicit <code>#[repr]</code> annotation are an important special case. Since
+there is only a single variant, the enum must be instantiated with
+that variant, which means that the enum is in fact equivalent to a
+struct. The question then is to what extent we should <strong>guarantee</strong>
+that the two share an equivalent layout, and also how to define the
+interaction with uninhabited types.</p>
+<p>As presently implemented, the compiler will use the same layout for
+structs and for single variant enums (as long as they do not have a
+<code>#[repr]</code> annotation that overrides that choice). So, for example, the
+struct <code>SomeStruct</code> and the enum <code>SomeEnum</code> would have an equivalent
+layout (<a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2018&amp;gist=3697ac684c3d021892694956df957653">playground</a>):</p>
+<pre><pre class="playpen"><code class="language-rust">struct SomeStruct;
+enum SomeEnum {
+  SomeVariant,
+}
+
+# fn main() {
+# use std::mem;
+let x = SomeStruct;
+let y = SomeEnum::SomeVariant;
+assert_eq!(
+    mem::size_of_val(&amp;x), 
+    mem::size_of_val(&amp;y),
+    &quot;types have different sizes&quot;,
+);
+println!(&quot;types both have size {}&quot;, std::mem::size_of_val(&amp;x));
+# }
+</code></pre></pre>
+<p>Similarly, the struct <code>SomeStruct</code> and the enum <code>SomeVariant</code> in this
+example would also be equivalent in their layout
+(<a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2018&amp;gist=924724764419f846c788a8763da45992">playground</a>):</p>
+<pre><pre class="playpen"><code class="language-rust">struct SomeStruct { x: u32 }
+enum SomeEnum {
+  SomeVariant { x: u32 },
+}
+
+# fn main() {
+# use std::mem;
+let x = SomeStruct { x: 22 };
+let y = SomeEnum::SomeVariant { x: 22 };
+assert_eq!(
+    mem::size_of_val(&amp;x), 
+    mem::size_of_val(&amp;y),
+    &quot;types have different sizes&quot;,
+);
+println!(&quot;types both have size {}&quot;, mem::size_of_val(&amp;x));
+}
+</code></pre></pre>
+<p>In fact, the compiler will use this optimized layout even for enums
+that define multiple variants, as long as all but one of the variants
+is uninhabited
+(<a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2018&amp;gist=3cc1484c5b91097f3dc2015b7c207a0e">playground</a>):</p>
+<pre><pre class="playpen"><code class="language-rust"># enum Void { }
+struct SomeStruct { x: u32 }
+enum SomeEnum {
+  SomeVariant { x: u32 },
+  UninhabitedVariant { y: Void },
+}
+
+# fn main() {
+# use std::mem;
+let x = SomeStruct { x: 22 };
+let y = SomeEnum::SomeVariant { x: 22 };
+assert_eq!(
+    mem::size_of_val(&amp;x), 
+    mem::size_of_val(&amp;y),
+    &quot;types have different sizes&quot;,
+);
+println!(&quot;types both have size {}&quot;, mem::size_of_val(&amp;x));
+# }
+</code></pre></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../layout/scalars.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../layout/unions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="../layout/scalars.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="../layout/unions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>
